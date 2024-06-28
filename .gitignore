@@ -1,0 +1,9 @@
+# Ignore everything
+*
+
+# Allow specific files
+!.gitignore
+!main.py
+!configExample.json
+!README.md
+!LICENCE

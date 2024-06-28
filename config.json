@@ -1,7 +1,358 @@
 {
-    "email" : "your_email",
-    "password" : "your_password",
-    "keywords" : "your_keywords",
-    "location" : "your_location",
-    "driver_path" : "your_path_to_webdriver"
+    "email": "sendmessage@gabo.email",
+    "password": "*******,********",
+    "keywords": [
+        "TypeScript Engineer",
+        "Angular Frontend",
+        "React Frontend",
+        "React Native",
+        "Node backend",
+        "JavaScript Full-Stack"
+    ],
+    "locations": [
+        "Belgium",
+        "Netherlands",
+        "DACH",
+        "Benelux",
+        "United Kingdom",
+        "Switzerland",
+        "Spain",
+        "United States",
+        "European Union",
+        "European Economic Area",
+        "Germany"
+    ],
+    "driver_path": "/usr/local/bin/geckodriver",
+    "sortBy": "R",
+    "filters": {
+        "easy_apply": true,
+        "experience": [
+            "Entry level",
+            "Associate"
+        ],
+        "jobType": [
+            "Full-time",
+            "Contract"
+        ],
+        "timePostedRange": [
+            "Past Week"
+        ],
+        "workplaceType": [
+            "Remote"
+        ],
+        "less_than_10_applicants": false
+    },
+    "experience": [
+        {
+            "title": "Full TypeScript Stack Engineer",
+            "description": "As a Full-Stack TypeScript Engineer at Beyondbmi, I spearhead the development of an advanced online weight loss clinic platform. Utilizing Angular and Bootstrap for the front-end and Express with TypeORM for the back-end, I ensure consistent and reliable performance across the stack with TypeScript. My role involves implementing HIPAA-compliant encryption protocols to safeguard patient data, developing an Android application with React Native, and deploying AWS Lambda functions and AWS Cognito for secure authentication. My contributions have enhanced user experience, data security, and the platform's scalability.",
+            "date": "Nov 2022 - Present",
+            "company": "Beyondbmi"
+        },
+        {
+            "title": "Software Engineer",
+            "description": "At GABO, I collaborate on a variety of projects, focusing on developing e-commerce sites, corporate websites, and online presences for small businesses. My work emphasizes Search Engine Optimization (SEO) to improve visibility and engagement. Using JavaScript frameworks, WordPress, PHP, and other tools, I deliver tailored, optimized web solutions. My role has honed my versatility in web development and client relationship management, ensuring long-term client satisfaction and successful project outcomes.",
+            "date": "Nov 2022 - Present",
+            "company": "GABO"
+        },
+        {
+            "title": "User Interface Engineer",
+            "description": "During my internship at talenTeal, I led the comprehensive redesign of the company\u2019s landing page to enhance user experience (UX) and user interface (UI). My focus was on creating an intuitive and navigable website, resulting in improved accessibility and user engagement. This project demonstrated my ability to apply front-end development skills effectively to achieve significant improvements in digital interaction and user satisfaction.",
+            "date": "Jul 2022 - Aug 2022",
+            "company": "talenTeal"
+        },
+        {
+            "title": "Technical Support Specialist",
+            "description": "At Lujo Network, I enhanced the company\u2019s security infrastructure by implementing firewalls and establishing robust backup systems. I also managed databases, developed website segments, and conducted security training sessions. My efforts improved the company\u2019s digital security framework and online presence, showcasing my ability to handle both technical support and development tasks effectively.",
+            "date": "Feb 2022 - Mar 2022",
+            "company": "Lujo Network"
+        },
+        {
+            "title": "Freelancer",
+            "description": "I provided web solutions, applying a range of technologies to address client requirements.",
+            "date": "Feb 2021 - Nov 2022"
+        }
+    ],
+    "projects": [
+        {
+            "title": "BEYONDBMI",
+            "desc": "As a Full-Stack TypeScript Engineer at Beyondbmi, I spearhead the development of an advanced online weight loss clinic platform. Utilizing Angular and Bootstrap for the front-end and Express with TypeORM for the back-end, I ensure consistent and reliable performance across the stack with TypeScript. My role involves implementing HIPAA-compliant encryption protocols to safeguard patient data, developing an Android application with React Native, and deploying AWS Lambda functions and AWS Cognito for secure authentication. My contributions have enhanced user experience, data security, and the platform's scalability.",
+            "link": "",
+            "skills": [
+                "JavaScript",
+                "Angular",
+                "TypeScript",
+                "Bootstrap",
+                "React Native",
+                "Metro",
+                "AWS",
+                "Express",
+                "TypeORM",
+                "Postgres",
+                "Jest",
+                "CI/CD",
+                "Docker",
+                "Jira",
+                "Bitbucket",
+                "Git",
+                "Stripe"
+            ]
+        },
+        {
+            "title": "GABO",
+            "desc": "The GABO Landing Page is a modern, visually appealing website built using the Astro framework, leveraging Solid.js for reactive UI components, Tailwind CSS for efficient styling, and Vercel for scalable hosting. This project integrates Better SQLite3 for lightweight database management, Gray Matter and Marked for markdown content handling, and Next.js with React for dynamic, interactive components. Featuring fast load times, smooth user experience, and improved SEO, the site employs Vercel Analytics and Speed Insights for monitoring performance. Key technologies include Astro, Solid.js, Tailwind CSS, Vercel, Next.js, React, Git, and GitHub.",
+            "link": "",
+            "skills": [
+                "JavaScript",
+                "Astro",
+                "Solid.js",
+                "Tailwind CSS",
+                "Vercel",
+                "Next.js",
+                "React",
+                "TypeScript",
+                "Git",
+                "GitHub"
+            ]
+        },
+        {
+            "title": "TALENTEAL",
+            "desc": "I led the comprehensive redesign of the company\u2019s landing page to enhance user experience (UX) and user interface (UI). My focus was on creating an intuitive and navigable website, resulting in improved accessibility and user engagement. This project demonstrated my ability to apply front-end development skills effectively to achieve significant improvements in digital interaction and user satisfaction.",
+            "link": "",
+            "skills": [
+                "JavaScript",
+                "React",
+                "Redux",
+                "Django",
+                "UI/UX Design",
+                "Sass",
+                "Git",
+                "GitHub"
+            ]
+        },
+        {
+            "title": "LUJO NETWORK",
+            "desc": "At Lujo Network, I led the design and development of the sign-in and sign-up pages, implementing secure forms and internationalization in several languages, along with data validation for the forms. I enhanced the company\u2019s security infrastructure by implementing firewalls and establishing robust backup systems. I also managed databases, developed website segments, and conducted security training sessions. My efforts improved the company\u2019s digital security framework and online presence, showcasing my ability to handle both technical support and development tasks effectively.",
+            "link": "",
+            "skills": [
+                "JavaScript",
+                "HTML",
+                "CSS",
+                "Database Management",
+                "Cybersecurity"
+            ]
+        },
+        {
+            "title": "EXA MONSTER",
+            "desc": "Exa Monster is a secure cloud storage solution that prioritizes user privacy. Developed as a SaaS application using Laravel, WordPress, and PHP, and deployed with Hetzner Cloud, it offers robust and secure storage capabilities. The platform also includes a mobile app built with React Native, providing users with seamless access to their data on the go.",
+            "link": "",
+            "skills": [
+                "Laravel",
+                "WordPress",
+                "PHP",
+                "React Native",
+                "Hetzner",
+                "SaaS",
+                "Stripe"
+            ]
+        },
+        {
+            "title": "IMALEVANTE",
+            "desc": "I designed and developed the Imalevante company landing page using WordPress and PHP. The project involved creating a visually appealing and functional website that effectively represents the company's brand and services.",
+            "link": "",
+            "skills": [
+                "WordPress",
+                "PHP"
+            ]
+        },
+        {
+            "title": "ROUTEU",
+            "desc": "RouteU is a fully open-sourced route management site built with the MERN stack. This project offers users the ability to manage and share routes. It is deployed on Vercel and Heroku, providing high availability and performance. The site features a modern UI developed with React, Bootstrap, and Ant Design, and it uses MongoDB Atlas for robust data management.",
+            "link": "https://route-u.vercel.app",
+            "skills": [
+                "React.js",
+                "CSS",
+                "Bootstrap",
+                "Ant Design",
+                "Grommet",
+                "Sass",
+                "HTML",
+                "Axios",
+                "React Router",
+                "MongoDB",
+                "Redux",
+                "Express",
+                "Node.js"
+            ]
+        },
+        {
+            "title": "FIGHT GAME",
+            "desc": "StreetFighter-like OSG (Open Sourced Game) is a simple, open-sourced fighting game inspired by Street Fighter. Developed with HTML, CSS, and Vanilla JavaScript, the game is designed for two players. It is hosted on GitHub Pages, offering easy access and a fun gaming experience.",
+            "link": "https://gabo-tech.github.io/StreetFighter-like-OSG",
+            "skills": [
+                "HTML",
+                "CSS",
+                "JavaScript"
+            ]
+        },
+        {
+            "title": "QUIZ",
+            "desc": "Custom Quiz is an open-sourced quiz game that uses the Open Trivia API and supports custom questions. Developed with HTML, CSS, and Vanilla JavaScript, the game offers a fun and interactive way to test knowledge on various topics. It is hosted on GitHub Pages.",
+            "link": "https://gabo-tech.github.io/Custom-Quizz",
+            "skills": [
+                "HTML",
+                "CSS",
+                "JavaScript"
+            ]
+        },
+        {
+            "title": "GABO SL",
+            "desc": "Gabo's Social Life is a fully open-sourced social media site built with the MERN stack. This project provides a platform for users to share and interact with content. It is deployed on Vercel and Heroku, ensuring high availability and performance. The site features modern UI components and comprehensive functionality, including user authentication, content sharing, and real-time updates.",
+            "link": "https://gabosl.com",
+            "skills": [
+                "React.js",
+                "Sass",
+                "HTML",
+                "Axios",
+                "React Router",
+                "MongoDB",
+                "Redux",
+                "Cypress",
+                "Express",
+                "Node.js",
+                "Material UI",
+                "Swagger"
+            ]
+        },
+        {
+            "title": "DGABO Token",
+            "desc": "Decentralyized GABO Token is a personal cryptocurrency project developed using JavaScript and Motoko for smart contracts. Although not deployed due to high blockchain fees, this project demonstrates the process of creating and managing a token on the Internet Computer blockchain. The project includes a web mockup and emulator setup instructions for local development.",
+            "link": "https://github.com/Gabo-Tech/Web3-Token-and-Faucet",
+            "skills": [
+                "JavaScript",
+                "Motoko",
+                "HTML",
+                "CSS",
+                "React"
+            ]
+        },
+        {
+            "title": "My Portfolio",
+            "desc": "This portfolio it's been designed with tailwinds and framer motion, includes several animaitons and some interactivity with background music to make the experience a bit more chilling. Has been developed with Next.js 14",
+            "link": "",
+            "skills": [
+                "JavaScript",
+                "React",
+                "Next.js",
+                "Tailwind CSS",
+                "Framer Motion"
+            ]
+        },
+        {
+            "title": "CHURCH OF JESUS CHRIST",
+            "desc": "This desktop application, developed using Tauri and Svelte, provides a convenient and efficient way to access and read the scriptures from the website of The Church of Jesus Christ of Latter-day Saints. The app features cross-platform compatibility (Windows, macOS, Linux), easy navigation, and a clean interface.",
+            "link": "https://github.com/Gabo-Tech/Scriptures-of-The-Church-of-Jesus-Christ-of-Latter-Day-Saints",
+            "skills": [
+                "Tauri",
+                "Svelte",
+                "JavaScript",
+                "Node.js"
+            ]
+        }
+    ],
+    "skills": [
+        "React",
+        "Angular",
+        "Svelte",
+        "Solid.js",
+        "Next.js",
+        "Astro",
+        "Tailwind CSS",
+        "Bootstrap",
+        "Ant Design",
+        "Material UI",
+        "Metro",
+        "React Native",
+        "CSS",
+        "HTML",
+        "Markdown",
+        "Sass",
+        "Grommet",
+        "Node.js",
+        "Express",
+        "TypeORM",
+        "PostgreSQL",
+        "Laravel",
+        "WordPress",
+        "PHP",
+        "Hetzner",
+        "Sequelize",
+        "Spring Boot",
+        "GraphQL",
+        "Apollo",
+        "JWT",
+        "Jest",
+        "Cypress",
+        "Playwright",
+        "Postman",
+        "Firebase",
+        "MongoDB",
+        "Redux",
+        "Axios",
+        "Swagger",
+        "Motoko",
+        "CI/CD",
+        "Git",
+        "Docker",
+        "Jira",
+        "Bitbucket",
+        "GitHub Actions",
+        "AWS",
+        "Vercel",
+        "DigitalOcean",
+        "Heroku",
+        "Netlify",
+        "Expo",
+        "Tauri",
+        "Recoil",
+        "Zustand",
+        "Vite",
+        "Vitest",
+        "Bun",
+        "MySQL",
+        "MariaDB",
+        "Mocha",
+        "NPM",
+        "Yarn",
+        "Webpack"
+    ],
+    "user_inputs": {
+        "United Kingdom": {
+            "City\nCity": "Valencia, Valencian Community, Spain",
+            "What is your gender?\nWhat is your gender?": "Male",
+            "Do you consider yourself to be disabled as defined by the Equality Act 2010? The Equality Act defines disability as 'A physical or mental impairment which has a substantial and long-term effect on the person's ability to carry out normal day-to-day activities'.\nDo you consider yourself to be disabled as defined by the Equality Act 2010? The Equality Act defines disability as 'A physical or mental impairment which has a substantial and long-term effect on the person's ability to carry out normal day-to-day activities'.": "No",
+            "Do you require any particular arrangements to support you in the recruitment and selection process?\nDo you require any particular arrangements to support you in the recruitment and selection process?\nRequired": "No",
+            "Please provide details of the arrangements you require. If you are invited to interview, we will confirm the arrangements with you ahead of the appointment date and time.": "No arrangements required.",
+            "What is your ethnic origin?\nWhat is your ethnic origin?": "White: Any other background",
+            "I Agree Terms & Conditions": true,
+            "TV Advert": false,
+            "CV Library": false,
+            "CW Jobs": false,
+            "Indeed": false,
+            "Jobsite": false,
+            "LinkedIn": true,
+            "Will you now or in the future require sponsorship for employment visa status?\nWill you now or in the future require sponsorship for employment visa status?\nRequired": "No",
+            "What is your current location?": "Valencia, Valencian Community, Spain",
+            "Have you completed the following level of education: Bachelor's Degree?\nHave you completed the following level of education: Bachelor's Degree?\nRequired": "No",
+            "How many years of work experience do you have with Oracle Cloud?": "0",
+            "How many years of work experience do you have with Oracle ERP Implementations?": "0",
+            "How many years of work experience do you have with Source to Pay?": "0",
+            "Are you legally authorized to work in United Kingdom?\nAre you legally authorized to work in United Kingdom?\nRequired": "Yes",
+            "Legal Name (if different than above)": "Gabriel Clemente Ramos",
+            "How did you hear about this job?": "LinkedIn",
+            "This job post is for positions in the EMEA region. Please confirm if you have the right to work in Portugal and/or UK\nThis job post is for positions in the EMEA region. Please confirm if you have the right to work in Portugal and/or UK": "Yes",
+            "Do you now or will you in the future require immigration sponsorship to work at Cloudflare?\nDo you now or will you in the future require immigration sponsorship to work at Cloudflare?": "No",
+            "Acknowledge/Confirm": true
+        }
+    }
 }
