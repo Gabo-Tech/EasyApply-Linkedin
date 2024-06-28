@@ -1,6 +1,6 @@
 # Ignore everything
 *
-
+config.json
 # Allow specific files
 !.gitignore
 !main.py
