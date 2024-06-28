@@ -21,8 +21,8 @@ These instructions will get you a copy of the project up and running on your loc
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/your_username/easyapply-linkedin.git
-    cd easyapply-linkedin
+    git clone https://github.com/Gabo-Tech/EasyApply-Linkedin.git
+    cd EasyApply-Linkedin
     ```
 
 2. Install the necessary packages:
@@ -75,6 +75,25 @@ These instructions will get you a copy of the project up and running on your loc
     }
     ```
 
+4. Update the locations code in the script:
+    ```python
+            LOCATION_MAPPING = {
+            "Switzerland": "106693272",
+            "Spain": "105646813",
+            "United States": "103644278",
+            "United Kingdom": "101165590",
+            "European Union": "91000000",
+            "European Economic Area": "91000002",
+            "DACH": "91000006",
+            "Benelux": "91000005",
+            "Netherlands": "102890719",
+            "Belgium":"100565514",
+            "Germany": "101282230"
+        }
+    ```
+    This you can find the code in the geoId found in the LinkedIn url after doing a job search.
+    These are the right ones if you don't want to look in other places, but there are many more.
+   
 ### Usage
 
 1. Run the application:
@@ -105,4 +124,4 @@ Please feel free to comment or give suggestions/issues. Fork and submit pull req
 
 ### License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](/LICENSE) file for details.
