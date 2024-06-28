@@ -124,4 +124,4 @@ Please feel free to comment or give suggestions/issues. Fork and submit pull req
 
 ### License
 
-This project is licensed under the MIT License - see the [LICENSE](/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/Gabo-Tech/EasyApply-Linkedin/blob/master/LICENCE) file for details.
