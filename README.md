@@ -15,7 +15,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 2. Selenium requires a driver to interface with the chosen browser. Make sure the driver is in your path, you will need to add your `driver_path` to the `config.json` file.
 
-    I used the Chrome driver, you can download it [here](https://sites.google.com/a/chromium.org/chromedriver/downloads). You can also download drivers for [Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/), [Firefox](https://github.com/mozilla/geckodriver/releases), or [Safari](https://webkit.org/blog/6900/webdriver-support-in-safari-10/), depending on your preferred browser.
+    I used the Firefox driver, you can download it [here](https://github.com/mozilla/geckodriver/releases). You can also download drivers for [Chrome](https://sites.google.com/a/chromium.org/chromedriver/downloads), [Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/), or [Safari](https://webkit.org/blog/6900/webdriver-support-in-safari-10/), depending on your preferred browser.
 
 ### Installation
 
@@ -36,8 +36,9 @@ These instructions will get you a copy of the project up and running on your loc
         "email": "example@example.com",
         "password": "securePassword123!",
         "keywords": ["Web Developer", "JavaScript", "React"],
+        "keywordsToAvoid": ["C++", ".NET"],
         "locations": ["New York", "Los Angeles", "San Francisco"],
-        "driver_path": "/usr/local/bin/chromedriver",
+        "driver_path": "/usr/local/bin/geckodriver",
         "sortBy": "Alphabetical",
         "filters": {
             "easy_apply": true,
@@ -77,19 +78,19 @@ These instructions will get you a copy of the project up and running on your loc
 
 4. Update the locations code in the script:
     ```python
-            LOCATION_MAPPING = {
-            "Switzerland": "106693272",
-            "Spain": "105646813",
-            "United States": "103644278",
-            "United Kingdom": "101165590",
-            "European Union": "91000000",
-            "European Economic Area": "91000002",
-            "DACH": "91000006",
-            "Benelux": "91000005",
-            "Netherlands": "102890719",
-            "Belgium":"100565514",
-            "Germany": "101282230"
-        }
+    LOCATION_MAPPING = {
+        "Switzerland": "106693272",
+        "Spain": "105646813",
+        "United States": "103644278",
+        "United Kingdom": "101165590",
+        "European Union": "91000000",
+        "European Economic Area": "91000002",
+        "DACH": "91000006",
+        "Benelux": "91000005",
+        "Netherlands": "102890719",
+        "Belgium": "100565514",
+        "Germany": "101282230"
+    }
     ```
     This you can find the code in the geoId found in the LinkedIn url after doing a job search.
     These are the right ones if you don't want to look in other places, but there are many more.
@@ -113,10 +114,31 @@ You can customize the job search and application process by editing the `config.
 - **email**: Your LinkedIn email address.
 - **password**: Your LinkedIn password.
 - **keywords**: Keywords for finding specific job titles (e.g., "Machine Learning Engineer", "Data Scientist").
+- **keywordsToAvoid**: Keywords to exclude from your search.
 - **locations**: Locations where you are currently looking for a position.
 - **driver_path**: Path to your downloaded WebDriver.
 - **sortBy**: Sort order for job listings.
 - **filters**: Various filters to narrow down the job search (e.g., easy apply, experience level, job type, etc.).
+
+### Testing
+
+#### Unit Tests
+
+Unit tests mock the Selenium WebDriver to test methods in isolation without making actual web requests.
+
+Run the unit tests:
+```bash
+python unit_tests.py
+```
+
+#### E2E Tests
+
+End-to-end tests using `pytest` and `selenium` require an actual web browser to run.
+
+Run the E2E tests:
+```bash
+pytest e2e_tests.py
+```
 
 ### Contributing
 

@@ -8,3 +8,5 @@ config.json
 !README.md
 !LICENCE
 !requirements.txt
+!e2e_tests.txt
+!unit_tests.txt

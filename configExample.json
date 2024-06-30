@@ -1,41 +1,55 @@
 {
-    "email": "example@example.com",
-    "password": "securePassword123!",
-    "keywords": ["Web Developer", "JavaScript", "React"],
-    "locations": ["New York", "Los Angeles", "San Francisco"],
-    "driver_path": "/usr/local/bin/chromedriver",
-    "sortBy": "Alphabetical",
-    "filters": {
-      "easy_apply": true,
-      "experience": ["Internship", "Entry Level", "Associate", "Mid-Senior Level", "Director", "Executive"], 
-      "jobType": ["Full-Time", "Part-Time", "Contract", "Internship", "Temporary"], 
-      "timePostedRange": ["Any Time", "Last Month", "Past Week", "Past 24 Hours"], 
-      "workplaceType": ["Remote", "Hybrid", "On-site"],
-      "less_than_10_applicants": true, 
-      "commitments": ["Full-Time", "Part-Time", "Contract", "Temporary", "Volunteer"] 
-    },
+  "email": "example@example.com",
+  "password": "securePassword123!",
+  "keywords": ["Web Developer", "JavaScript", "React"],
+  "keywordsToAvoid": ["C++", ".NET", "Analyst", "PHP", "Python", "C", "Java"],
+  "locations": ["New York", "Los Angeles", "San Francisco"],
+  "driver_path": "/usr/local/bin/chromedriver",
+  "sortBy": "Alphabetical",
+  "filters": {
+    "easy_apply": true,
     "experience": [
-      {
-        "title": "Junior Web Developer",
-        "description": "Developing responsive web applications using JavaScript and React.",
-        "date": "Jan 2023 - Present",
-        "company": "Example Company"
-      }
+      "Internship",
+      "Entry Level",
+      "Associate",
+      "Mid-Senior Level",
+      "Director",
+      "Executive"
     ],
-    "projects": [
-      {
-        "title": "Project Alpha",
-        "desc": "A project description here...",
-        "link": "#",
-        "skills": ["JavaScript", "React", "Node.js"]
-      }
+    "jobType": [
+      "Full-Time",
+      "Part-Time",
+      "Contract",
+      "Internship",
+      "Temporary"
     ],
-    "skills": [
-      "JavaScript",
-      "React",
-      "Node.js",
-      "Express",
-      "MongoDB"
-    ],
-    "user_inputs": {}
-  }
+    "timePostedRange": ["Any Time", "Last Month", "Past Week", "Past 24 Hours"],
+    "workplaceType": ["Remote", "Hybrid", "On-site"],
+    "less_than_10_applicants": true,
+    "commitments": [
+      "Full-Time",
+      "Part-Time",
+      "Contract",
+      "Temporary",
+      "Volunteer"
+    ]
+  },
+  "experience": [
+    {
+      "title": "Junior Web Developer",
+      "description": "Developing responsive web applications using JavaScript and React.",
+      "date": "Jan 2023 - Present",
+      "company": "Example Company"
+    }
+  ],
+  "projects": [
+    {
+      "title": "Project Alpha",
+      "desc": "A project description here...",
+      "link": "#",
+      "skills": ["JavaScript", "React", "Node.js"]
+    }
+  ],
+  "skills": ["JavaScript", "React", "Node.js", "Express", "MongoDB"],
+  "user_inputs": {}
+}
