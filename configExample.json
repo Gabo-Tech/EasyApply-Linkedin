@@ -1,55 +1,103 @@
 {
-  "email": "example@example.com",
-  "password": "securePassword123!",
-  "keywords": ["Web Developer", "JavaScript", "React"],
-  "keywordsToAvoid": ["C++", ".NET", "Analyst", "PHP", "Python", "C", "Java"],
-  "locations": ["New York", "Los Angeles", "San Francisco"],
-  "driver_path": "/usr/local/bin/chromedriver",
-  "sortBy": "Alphabetical",
+  "email": "your_email@example.com",
+  "password": "your_secure_password",
+  "keywords": [
+    "keyword1",
+    "keyword2",
+    "keyword3"
+  ],
+  "keywordsToAvoid": [
+    "keyword1_to_avoid",
+    "keyword2_to_avoid",
+    "keyword3_to_avoid"
+  ],
+  "locations": [
+    "location1",
+    "location2",
+    "location3"
+  ],
+  "driver_path": "path/to/driver",
+  "sortBy": "sort_preference",
   "filters": {
     "easy_apply": true,
+    "experience": [],
+    "jobType": ["job_type1", "job_type2"],
+    "timePostedRange": [],
+    "workplaceType": ["type1", "type2"],
+    "less_than_10_applicants": false
+  },
+  "aiContext": {
+    "preferences": {
+      "workplaceType": "preference1",
+      "workplaceTypeAlternative": ["alternative1", "alternative2"],
+      "jobType": "preference2",
+      "jobTypeAlternative": ["alternative3", "alternative4"],
+      "prereferredEnd": "preference3",
+      "prereferredEndAlternative": ["alternative5", "alternative6"]
+    },
     "experience": [
-      "Internship",
-      "Entry Level",
-      "Associate",
-      "Mid-Senior Level",
-      "Director",
-      "Executive"
+      {
+        "title": "job_title",
+        "description": "job_description",
+        "date": "date_range",
+        "company": "company_name",
+        "location": "location",
+        "skills": [
+          "skill1",
+          "skill2",
+          "skill3"
+        ]
+      }
     ],
-    "jobType": [
-      "Full-Time",
-      "Part-Time",
-      "Contract",
-      "Internship",
-      "Temporary"
+    "education": [
+      {
+        "title": "education_title",
+        "description": "education_description",
+        "date": "date_range",
+        "company": "institution_name",
+        "skills": [
+          "skill1",
+          "skill2",
+          "skill3"
+        ]
+      },
+      {
+        "title": "certification_title",
+        "description": "certification_description",
+        "date": "date_range",
+        "company": "certifying_body",
+        "skills": [
+          "skill1",
+          "skill2",
+          "skill3"
+        ]
+      }
     ],
-    "timePostedRange": ["Any Time", "Last Month", "Past Week", "Past 24 Hours"],
-    "workplaceType": ["Remote", "Hybrid", "On-site"],
-    "less_than_10_applicants": true,
-    "commitments": [
-      "Full-Time",
-      "Part-Time",
-      "Contract",
-      "Temporary",
-      "Volunteer"
+    "projects": [
+      {
+        "name": "project_name",
+        "description": "project_description",
+        "technologies": [
+          "technology1",
+          "technology2",
+          "technology3"
+        ]
+      }
+    ],
+    "skills": [
+      "skill1",
+      "skill2",
+      "skill3"
     ]
   },
-  "experience": [
-    {
-      "title": "Junior Web Developer",
-      "description": "Developing responsive web applications using JavaScript and React.",
-      "date": "Jan 2023 - Present",
-      "company": "Example Company"
+  "user_inputs": {
+    "country1": {
+      "field1": "value1",
+      "field2": "value2"
+    },
+    "country2": {
+      "field1": "value1",
+      "field2": "value2"
     }
-  ],
-  "projects": [
-    {
-      "title": "Project Alpha",
-      "desc": "A project description here...",
-      "link": "#",
-      "skills": ["JavaScript", "React", "Node.js"]
-    }
-  ],
-  "skills": ["JavaScript", "React", "Node.js", "Express", "MongoDB"],
-  "user_inputs": {}
+  }
 }
