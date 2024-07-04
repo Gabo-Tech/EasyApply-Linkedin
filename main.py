@@ -17,6 +17,8 @@ from selenium.common.exceptions import (
     ElementClickInterceptedException,
 )
 from selenium.webdriver.firefox.service import Service as FirefoxService
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
+import torch
 
 
 class EasyApplyLinkedin:
@@ -100,6 +102,10 @@ class EasyApplyLinkedin:
         self.current_location_index = 0
         if "user_inputs" not in self.context_data:
             self.context_data["user_inputs"] = {}
+
+        # Initialize the AI model
+        self.model, self.tokenizer = self.init_ai_model()
+
         firefox_service = FirefoxService(executable_path=data["driver_path"])
         self.driver = webdriver.Firefox(service=firefox_service)
         self.init_logging()
@@ -326,12 +332,17 @@ class EasyApplyLinkedin:
             if label_text in location_specific_inputs:
                 return location_specific_inputs[label_text]
 
-        user_input = input(f"Please provide the answer for '{label_text}': ")
+        # Generate response using AI
+        response = self.generate_ai_response(label_text)
+        if response is None:
+            user_input = input(f"Please provide the answer for '{label_text}': ")
+            response = user_input
+
         if current_location not in self.context_data["user_inputs"]:
             self.context_data["user_inputs"][current_location] = {}
-        self.context_data["user_inputs"][current_location][label_text] = user_input
+        self.context_data["user_inputs"][current_location][label_text] = response
         self.update_config_file()
-        return user_input
+        return response
 
     def get_checkbox_response_for_label(self, label_text):
         """Get user response for a checkbox labeled by the given text."""
@@ -341,15 +352,20 @@ class EasyApplyLinkedin:
             if label_text in location_specific_inputs:
                 return location_specific_inputs[label_text]
 
-        while True:
-            user_input = input(f"Do you want to check the box for '{label_text}'? (yes/no): ").strip().lower()
-            if user_input in ["yes", "no"]:
-                response = user_input == "yes"
-                if current_location not in self.context_data["user_inputs"]:
-                    self.context_data["user_inputs"][current_location] = {}
-                self.context_data["user_inputs"][current_location][label_text] = response
-                self.update_config_file()
-                return response
+        # Generate response using AI
+        response = self.generate_ai_response(label_text)
+        if response is None:
+            while True:
+                user_input = input(f"Do you want to check the box for '{label_text}'? (yes/no): ").strip().lower()
+                if user_input in ["yes", "no"]:
+                    response = user_input == "yes"
+                    break
+
+        if current_location not in self.context_data["user_inputs"]:
+            self.context_data["user_inputs"][current_location] = {}
+        self.context_data["user_inputs"][current_location][label_text] = response
+        self.update_config_file()
+        return response
 
     def get_radio_response_for_label(self, label_text, options):
         """Get user response for a radio button group labeled by the given text."""
@@ -359,20 +375,23 @@ class EasyApplyLinkedin:
             if label_text in location_specific_inputs:
                 return location_specific_inputs[label_text]
 
-        while True:
-            print(f"Please select an option for '{label_text}':")
-            for i, option in enumerate(options):
-                print(f"{i + 1}. {option}")
-            user_input = input("Enter the number of your choice: ").strip()
-            if user_input.isdigit() and 1 <= int(user_input) <= len(options):
-                response = options[int(user_input) - 1]
-                if current_location not in self.context_data["user_inputs"]:
-                    self.context_data["user_inputs"][current_location] = {}
-                self.context_data["user_inputs"][current_location][label_text] = response
-                self.update_config_file()
-                return response
-            else:
-                print("Invalid input, please try again.")
+        # Generate response using AI
+        response = self.generate_ai_response(label_text)
+        if response is None:
+            while True:
+                print(f"Please select an option for '{label_text}':")
+                for i, option in enumerate(options):
+                    print(f"{i + 1}. {option}")
+                user_input = input("Enter the number of your choice: ").strip()
+                if user_input.isdigit() and 1 <= int(user_input) <= len(options):
+                    response = options[int(user_input) - 1]
+                    break
+
+        if current_location not in self.context_data["user_inputs"]:
+            self.context_data["user_inputs"][current_location] = {}
+        self.context_data["user_inputs"][current_location][label_text] = response
+        self.update_config_file()
+        return response
 
     def get_file_response_for_label(self, label_text):
         """Get user response for a file upload labeled by the given text."""
@@ -382,12 +401,17 @@ class EasyApplyLinkedin:
             if label_text in location_specific_inputs:
                 return location_specific_inputs[label_text]
 
-        user_input = input(f"Please provide the file location for '{label_text}': ")
+        # Generate response using AI
+        response = self.generate_ai_response(label_text)
+        if response is None:
+            user_input = input(f"Please provide the file location for '{label_text}': ")
+            response = user_input
+
         if current_location not in self.context_data["user_inputs"]:
             self.context_data["user_inputs"][current_location] = {}
-        self.context_data["user_inputs"][current_location][label_text] = user_input
+        self.context_data["user_inputs"][current_location][label_text] = response
         self.update_config_file()
-        return user_input
+        return response
 
     def update_config_file(self):
         """Update the configuration file with the latest user inputs."""
@@ -398,7 +422,7 @@ class EasyApplyLinkedin:
         """Find and apply to job offers."""
         while self.current_location_index < len(self.locations):
             self.apply_filters_and_search()
-            
+
             current_page = 1
 
             while True:
@@ -419,11 +443,11 @@ class EasyApplyLinkedin:
                                 break
 
                             job_item = job_list_items[index]
-                            
+
                             # Scroll the element into view
                             self.driver.execute_script("arguments[0].scrollIntoView(true);", job_item)
                             time.sleep(1)
-                            
+
                             try:
                                 # Attempt to click the element with JavaScript
                                 self.driver.execute_script("arguments[0].click();", job_item)
@@ -440,7 +464,7 @@ class EasyApplyLinkedin:
                             )
 
                             company_name = self.get_company_name(job_item)
-                            
+
                             if company_name in self.applied_companies:
                                 self.log_info(f"Already applied to a job at {company_name}, skipping...")
                                 self.close_application_modal()
@@ -682,6 +706,24 @@ class EasyApplyLinkedin:
     def handle_captcha(self):
         """Handle CAPTCHA prompts manually."""
         input("CAPTCHA detected. Please solve the CAPTCHA manually and then press Enter to continue...")
+
+    def init_ai_model(self):
+        """Initialize the AI model."""
+        model_name = "gpt2"
+        tokenizer = GPT2Tokenizer.from_pretrained(model_name)
+        model = GPT2LMHeadModel.from_pretrained(model_name)
+        return model, tokenizer
+
+    def generate_ai_response(self, prompt):
+        """Generate a response using the AI model."""
+        try:
+            inputs = self.tokenizer.encode(prompt, return_tensors="pt")
+            outputs = self.model.generate(inputs, max_length=50, do_sample=True, top_k=50)
+            response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+            return response
+        except Exception as e:
+            self.log_error(f"AI generation error: {e}")
+            return None
 
 
 if __name__ == "__main__":
