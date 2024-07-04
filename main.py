@@ -491,7 +491,6 @@ class EasyApplyLinkedin:
 
             self.current_location_index += 1
 
-
     def get_company_name(self, job_item):
         """Extract the company name from a job listing."""
         try:
