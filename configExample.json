@@ -1,103 +1,194 @@
 {
-  "email": "your_email@example.com",
-  "password": "your_secure_password",
+  "email": "example@domain.com",
+  "password": "YourSecurePassword123!",
   "keywords": [
-    "keyword1",
-    "keyword2",
-    "keyword3"
+      "TypeScript",
+      "Angular",
+      "React",
+      "React Native",
+      "Node",
+      "JavaScript",
+      "Frontend Engineer",
+      "Full-Stack Engineer",
+      "Backend Engineer"
   ],
   "keywordsToAvoid": [
-    "keyword1_to_avoid",
-    "keyword2_to_avoid",
-    "keyword3_to_avoid"
+      "C++",
+      ".NET",
+      "Analyst",
+      "PHP",
+      "Python",
+      "C",
+      "Java",
+      "Go",
+      "Rust",
+      "Kotlin",
+      "Swift",
+      "Objective-C",
+      "Robotic",
+      "Data",
+      "Science",
+      "Cloud",
+      "AI",
+      "ML",
+      "DL",
+      "NLP",
+      "CV",
+      "DevOps",
+      "Solidity"
   ],
   "locations": [
-    "location1",
-    "location2",
-    "location3"
+      "Canada",
+      "Portugal",
+      "Switzerland",
+      "Belgium",
+      "Netherlands",
+      "DACH",
+      "Benelux",
+      "European Union",
+      "European Economic Area",
+      "Germany",
+      "Spain",
+      "United States",
+      "United Kingdom"
   ],
-  "driver_path": "path/to/driver",
-  "sortBy": "sort_preference",
+  "driver_path": "/path/to/geckodriver",
+  "sortBy": "R",
   "filters": {
-    "easy_apply": true,
-    "experience": [],
-    "jobType": ["job_type1", "job_type2"],
-    "timePostedRange": [],
-    "workplaceType": ["type1", "type2"],
-    "less_than_10_applicants": false
+      "easy_apply": true,
+      "experience": [],
+      "jobType": [
+          "Full-time",
+          "Contract"
+      ],
+      "timePostedRange": [],
+      "workplaceType": [
+          "Remote",
+          "Hybrid"
+      ],
+      "less_than_10_applicants": false
   },
   "aiContext": {
-    "preferences": {
-      "workplaceType": "preference1",
-      "workplaceTypeAlternative": ["alternative1", "alternative2"],
-      "jobType": "preference2",
-      "jobTypeAlternative": ["alternative3", "alternative4"],
-      "prereferredEnd": "preference3",
-      "prereferredEndAlternative": ["alternative5", "alternative6"]
-    },
-    "experience": [
-      {
-        "title": "job_title",
-        "description": "job_description",
-        "date": "date_range",
-        "company": "company_name",
-        "location": "location",
-        "skills": [
-          "skill1",
-          "skill2",
-          "skill3"
-        ]
-      }
-    ],
-    "education": [
-      {
-        "title": "education_title",
-        "description": "education_description",
-        "date": "date_range",
-        "company": "institution_name",
-        "skills": [
-          "skill1",
-          "skill2",
-          "skill3"
-        ]
+      "preferences": {
+          "workplaceType": "Remote",
+          "workplaceTypeAlternative": [
+              "Hybrid"
+          ],
+          "jobType": "Contract",
+          "jobTypeAlternative": [
+              "Full-time"
+          ],
+          "prereferredEnd": "Backend",
+          "prereferredEndAlternative": [
+              "Full-Stack",
+              "Frontend"
+          ]
       },
-      {
-        "title": "certification_title",
-        "description": "certification_description",
-        "date": "date_range",
-        "company": "certifying_body",
-        "skills": [
-          "skill1",
-          "skill2",
-          "skill3"
-        ]
-      }
-    ],
-    "projects": [
-      {
-        "name": "project_name",
-        "description": "project_description",
-        "technologies": [
-          "technology1",
-          "technology2",
-          "technology3"
-        ]
-      }
-    ],
-    "skills": [
-      "skill1",
-      "skill2",
-      "skill3"
-    ]
+      "currentLocation": "Fake City, Country",
+      "willingToRelocate": true,
+      "experience": [
+          {
+              "title": "Full-Stack Developer",
+              "description": "Developed an e-commerce platform using MERN stack.",
+              "date": "Jan 2021 - Present",
+              "company": "Tech Solutions",
+              "location": "Remote",
+              "skills": [
+                  "TypeScript",
+                  "React",
+                  "Node.js",
+                  "Express.js",
+                  "MongoDB"
+              ]
+          },
+          {
+              "title": "Frontend Engineer",
+              "description": "Designed and implemented user interfaces with Angular.",
+              "date": "Jun 2019 - Dec 2020",
+              "company": "Web Creators",
+              "location": "San Francisco, CA",
+              "skills": [
+                  "JavaScript",
+                  "Angular",
+                  "HTML",
+                  "CSS"
+              ]
+          }
+      ],
+      "education": [
+          {
+              "title": "Bachelor of Science - Computer Science",
+              "description": "Studied various aspects of computer science, including algorithms, data structures, and web development.",
+              "date": "Sep 2015 - Jun 2019",
+              "company": "University of Somewhere",
+              "skills": [
+                  "Algorithms",
+                  "Data Structures",
+                  "Web Development",
+                  "Machine Learning"
+              ]
+          }
+      ],
+      "projects": [
+          {
+              "name": "Project Alpha",
+              "description": "A project management tool developed using React and Node.js.",
+              "technologies": [
+                  "React",
+                  "Node.js",
+                  "Express",
+                  "MongoDB",
+                  "Docker"
+              ]
+          }
+      ],
+      "skills": [
+          "TypeScript",
+          "JavaScript",
+          "Angular",
+          "React",
+          "Node.js",
+          "Express.js",
+          "MongoDB",
+          "HTML",
+          "CSS"
+      ]
   },
   "user_inputs": {
-    "country1": {
-      "field1": "value1",
-      "field2": "value2"
-    },
-    "country2": {
-      "field1": "value1",
-      "field2": "value2"
-    }
+      "United States": {
+          "City\nCity": "Fake City, USA",
+          "What is your gender?\nWhat is your gender?": "Prefer not to say",
+          "Do you consider yourself to be disabled as defined by the Equality Act 2010?": "No",
+          "Do you require any particular arrangements to support you in the recruitment and selection process?": "No",
+          "What is your ethnic origin?\nWhat is your ethnic origin?": "White",
+          "I Agree Terms & Conditions": true,
+          "LinkedIn": true
+      },
+      "Belgium": {
+          "What is your preferred name?": "John Doe",
+          "Do you now, or will you in the future, require visa sponsorship to work for our company in the country this role is advertised for?": "No",
+          "What are your salary expectations?": "60000",
+          "English": true,
+          "City\nCity": "Fake City, Belgium",
+          "I Agree Terms & Conditions": true,
+          "What language(s) do you speak and/or understand? What is your level?": "English, French - fluent",
+          "Are you legally authorized to work in the country of the job?": "Yes"
+      },
+      "Netherlands": {
+          "What is your current location?": "Fake City, Netherlands",
+          "City\nCity": "Fake City, Netherlands",
+          "Legal Name (if different than above)": "John Doe",
+          "How did you hear about this job?": "LinkedIn",
+          "Do you now or will you in the future require immigration sponsorship to work at Company?": "No",
+          "What are your salary expectations?": "65000",
+          "This vacancy is for an internal position and we do not contract freelancers for this position. Do you acknowledge this statement?": "Yes"
+      },
+      "Spain": {
+          "What is your level of proficiency in English?\nWhat is your level of proficiency in English?": "Native or bilingual",
+          "City\nCity": "Fake City, Spain",
+          "Indica tus expectativas salariales frente a un cambio.": "50000",
+          "Are you legally authorized to work in Spain?": "Yes",
+          "What is your salary expectation?": "50000"
+      }
   }
 }

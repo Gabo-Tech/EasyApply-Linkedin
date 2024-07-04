@@ -8,7 +8,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-1. Install selenium. I used `pip` to install the selenium package.
+1. Install Selenium. Use `pip` to install the Selenium package:
     ```sh
     pip install selenium
     ```
@@ -39,62 +39,38 @@ These instructions will get you a copy of the project up and running on your loc
         "keywordsToAvoid": ["C++", ".NET"],
         "locations": ["New York", "Los Angeles", "San Francisco"],
         "driver_path": "/usr/local/bin/geckodriver",
-        "sortBy": "Alphabetical",
+        "sortBy": "R",
         "filters": {
             "easy_apply": true,
-            "experience": ["Internship", "Entry Level", "Associate", "Mid-Senior Level", "Director", "Executive"], 
-            "jobType": ["Full-Time", "Part-Time", "Contract", "Internship", "Temporary"], 
-            "timePostedRange": ["Any Time", "Last Month", "Past Week", "Past 24 Hours"], 
+            "experience": ["Internship", "Entry level", "Associate", "Mid-Senior level", "Director", "Executive"],
+            "jobType": ["Full-time", "Part-time", "Contract", "Internship", "Temporary"],
+            "timePostedRange": ["Any Time", "Last Month", "Past Week", "Past 24 hours"],
             "workplaceType": ["Remote", "Hybrid", "On-site"],
-            "less_than_10_applicants": true, 
-            "commitments": ["Full-Time", "Part-Time", "Contract", "Temporary", "Volunteer"] 
-        },
-        "experience": [
-            {
-                "title": "Junior Web Developer",
-                "description": "Developing responsive web applications using JavaScript and React.",
-                "date": "Jan 2023 - Present",
-                "company": "Example Company"
-            }
-        ],
-        "projects": [
-            {
-                "title": "Project Alpha",
-                "desc": "A project description here...",
-                "link": "#",
-                "skills": ["JavaScript", "React", "Node.js"]
-            }
-        ],
-        "skills": [
-            "JavaScript",
-            "React",
-            "Node.js",
-            "Express",
-            "MongoDB"
-        ],
-        "user_inputs": {}
+            "less_than_10_applicants": true
+        }
     }
     ```
 
-4. Update the locations code in the script:
+4. Update the location codes in the script:
     ```python
     LOCATION_MAPPING = {
+        "Canada": "101174742",
+        "Portugal": "100364837",
         "Switzerland": "106693272",
-        "Spain": "105646813",
         "United States": "103644278",
-        "United Kingdom": "101165590",
-        "European Union": "91000000",
-        "European Economic Area": "91000002",
+        "Belgium": "100565514",
+        "Netherlands": "102890719",
         "DACH": "91000006",
         "Benelux": "91000005",
-        "Netherlands": "102890719",
-        "Belgium": "100565514",
-        "Germany": "101282230"
+        "European Union": "91000000",
+        "European Economic Area": "91000002",
+        "Germany": "101282230",
+        "Spain": "105646813",
+        "United Kingdom": "101165590"
     }
     ```
-    This you can find the code in the geoId found in the LinkedIn url after doing a job search.
-    These are the right ones if you don't want to look in other places, but there are many more.
-   
+    You can find the code in the `geoId` found in the LinkedIn URL after doing a job search. These are the correct ones if you don't want to search elsewhere, but there are many more.
+
 ### Usage
 
 1. Run the application:

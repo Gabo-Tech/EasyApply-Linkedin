@@ -72,17 +72,19 @@ class EasyApplyLinkedin:
     }
 
     LOCATION_MAPPING = {
+        "Canada": "101174742",
+        "Portugal": "100364837",
         "Switzerland": "106693272",
-        "Spain": "105646813",
         "United States": "103644278",
-        "United Kingdom": "101165590",
-        "European Union": "91000000",
-        "European Economic Area": "91000002",
+        "Belgium": "100565514",
+        "Netherlands": "102890719",
         "DACH": "91000006",
         "Benelux": "91000005",
-        "Netherlands": "102890719",
-        "Belgium": "100565514",
+        "European Union": "91000000",
+        "European Economic Area": "91000002",
         "Germany": "101282230",
+        "Spain": "105646813",
+        "United Kingdom": "101165590",
     }
 
     def __init__(self, data):
@@ -413,6 +415,9 @@ class EasyApplyLinkedin:
                             job_list_container = self.find_element_with_retry(By.CLASS_NAME, "scaffold-layout__list-container")
                             job_list_items = job_list_container.find_elements(By.TAG_NAME, "li")
 
+                            if index >= len(job_list_items):
+                                break
+
                             job_item = job_list_items[index]
                             
                             # Scroll the element into view
@@ -613,7 +618,6 @@ class EasyApplyLinkedin:
                             break
 
                 elif input_field.tag_name == "input" and input_field.get_attribute("type") == "file":
-                    # Handle file upload
                     response = self.get_file_response_for_label(label_text)
                     input_field.send_keys(response)
                     time.sleep(1)

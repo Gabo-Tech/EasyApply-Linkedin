@@ -1,7 +1,7 @@
 import pytest
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service as FirefoxService
-from easy_apply_linkedin import EasyApplyLinkedin
+from main import EasyApplyLinkedin
 
 @pytest.fixture
 def setup_browser():
@@ -14,18 +14,79 @@ def setup_browser():
 def setup_bot(setup_browser):
     data = {
         "email": "sendmessage@gabo.email",
-        "password": "bp8v9fvk#?QaKe7",
-        "keywords": ["TypeScript", "Angular", "React"],
-        "keywordsToAvoid": ["C++", ".NET"],
-        "locations": ["Switzerland", "Belgium"],
+        "password": "***,****,****",
+        "keywords": [
+            "TypeScript",
+            "Angular",
+            "React",
+            "React Native",
+            "Node",
+            "JavaScript",
+            "Frontend Engineer",
+            "Full-Stack Engineer",
+            "Backend Engineer"
+        ],
+        "keywordsToAvoid": [
+            "C++",
+            ".NET",
+            "Analyst",
+            "PHP",
+            "Python",
+            "C",
+            "Java",
+            "Go",
+            "Rust",
+            "Kotlin",
+            "Swift",
+            "Objective-C",
+            "Rust",
+            "Kotlin",
+            "Swift",
+            "C#",
+            ".Net",
+            ".net",
+            "Robotic",
+            "Data",
+            "Science",
+            "Cloud",
+            "Robotics",
+            "AI",
+            "ML",
+            "DL",
+            "NLP",
+            "CV",
+            "DevOps",
+            "Solidity"
+        ],
+        "locations": [
+            "Canada",
+            "Portugal",
+            "Switzerland",
+            "Belgium",
+            "Netherlands",
+            "DACH",
+            "Benelux",
+            "European Union",
+            "European Economic Area",
+            "Germany",
+            "Spain",
+            "United States",
+            "United Kingdom"
+        ],
         "driver_path": "/usr/local/bin/geckodriver",
         "sortBy": "R",
         "filters": {
             "easy_apply": True,
             "experience": [],
-            "jobType": ["Full-time", "Contract"],
+            "jobType": [
+                "Full-time",
+                "Contract"
+            ],
             "timePostedRange": [],
-            "workplaceType": ["Remote", "Hybrid"],
+            "workplaceType": [
+                "Remote",
+                "Hybrid"
+            ],
             "less_than_10_applicants": False
         }
     }
