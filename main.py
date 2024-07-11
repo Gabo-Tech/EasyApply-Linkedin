@@ -72,6 +72,7 @@ class EasyApplyLinkedin:
     }
 
     LOCATION_MAPPING = {
+        "Texas":"102748797",
         "Canada": "101174742",
         "Portugal": "100364837",
         "Switzerland": "106693272",
@@ -178,6 +179,16 @@ class EasyApplyLinkedin:
         """Log in to LinkedIn using the provided credentials."""
         try:
             self.driver.get("https://www.linkedin.com/login")
+            self.driver.add_cookie({
+                'name': 'li_theme',
+                'value': 'dark',
+                'domain': '.linkedin.com',
+                'path': '/',
+                'expires': int(time.time() + 365 * 24 * 60 * 60), 
+                'secure': True,
+                'httpOnly': False
+            })
+            self.driver.refresh()
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.NAME, "session_key"))
             )
@@ -247,8 +258,12 @@ class EasyApplyLinkedin:
     def construct_url(self):
         """Construct the URL for job search with applied filters."""
         current_location = self.locations[self.current_location_index]
+        keywords_query = f'({self.keywords})'
+        keywords_to_avoid_query = f'NOT ({self.keywords_to_avoid})'
+        combined_keywords = f'{keywords_query} {keywords_to_avoid_query}'
+
         params = {
-            "keywords": f"({self.keywords}) NOT ({self.keywords_to_avoid})",
+            "keywords": combined_keywords,
             "origin": "JOB_SEARCH_PAGE_JOB_FILTER",
             "refresh": "true",
             "sortBy": self.sort_by,
