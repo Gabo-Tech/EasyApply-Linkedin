@@ -115,8 +115,12 @@ class EasyApplyLinkedin:
     def load_json(self, path):
         """Load JSON data from the specified path."""
         if path.exists():
-            with path.open("r") as file:
-                return json.load(file)
+            try:
+                with path.open("r") as file:
+                    return json.load(file)
+            except json.JSONDecodeError:
+                self.log_error(f"Error decoding JSON from {path}")
+                return {}
         return {}
 
     def save_json(self, path, data):
@@ -242,6 +246,7 @@ class EasyApplyLinkedin:
                 search_keywords.click()
                 search_keywords.send_keys(Keys.RETURN)
 
+                time.sleep(5)  # wait for the search results to load
                 if not self.check_no_results():
                     break
                 else:
@@ -307,6 +312,7 @@ class EasyApplyLinkedin:
         while self.current_location_index < len(self.locations):
             search_url = self.construct_url()
             self.driver.get(search_url)
+            time.sleep(5)  # wait for the search results to load
 
             if self.check_no_results():
                 self.log_info(f"No matching jobs found in {self.locations[self.current_location_index]}.")
