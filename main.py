@@ -72,7 +72,7 @@ class EasyApplyLinkedin:
     }
 
     LOCATION_MAPPING = {
-        "Texas":"102748797",
+        "Texas": "102748797",
         "Canada": "101174742",
         "Portugal": "100364837",
         "Switzerland": "106693272",
@@ -246,7 +246,7 @@ class EasyApplyLinkedin:
                 search_keywords.click()
                 search_keywords.send_keys(Keys.RETURN)
 
-                time.sleep(5)  # wait for the search results to load
+                time.sleep(5)  
                 if not self.check_no_results():
                     break
                 else:
@@ -312,7 +312,7 @@ class EasyApplyLinkedin:
         while self.current_location_index < len(self.locations):
             search_url = self.construct_url()
             self.driver.get(search_url)
-            time.sleep(5)  # wait for the search results to load
+            time.sleep(5)
 
             if self.check_no_results():
                 self.log_info(f"No matching jobs found in {self.locations[self.current_location_index]}.")
@@ -419,7 +419,7 @@ class EasyApplyLinkedin:
         """Find and apply to job offers."""
         while self.current_location_index < len(self.locations):
             self.apply_filters_and_search()
-            
+
             current_page = 1
 
             while True:
@@ -440,13 +440,11 @@ class EasyApplyLinkedin:
                                 break
 
                             job_item = job_list_items[index]
-                            
-                            # Scroll the element into view
+
                             self.driver.execute_script("arguments[0].scrollIntoView(true);", job_item)
                             time.sleep(1)
-                            
+
                             try:
-                                # Attempt to click the element with JavaScript
                                 self.driver.execute_script("arguments[0].click();", job_item)
                             except ElementClickInterceptedException:
                                 self.log_info("Element click intercepted, skipping to next job...")
@@ -461,14 +459,14 @@ class EasyApplyLinkedin:
                             )
 
                             company_name = self.get_company_name(job_item)
-                            
+
                             if company_name in self.applied_companies:
                                 self.log_info(f"Already applied to a job at {company_name}, skipping...")
                                 self.close_application_modal()
                                 continue
 
                             job_details_wrapper = self.find_element_with_retry(By.CLASS_NAME, "jobs-search__job-details--wrapper")
-
+                  
                             try:
                                 apply_button = job_details_wrapper.find_element(
                                     By.CSS_SELECTOR, "button.jobs-apply-button.artdeco-button--primary"
@@ -503,7 +501,7 @@ class EasyApplyLinkedin:
                         next_page_button = pagination_container.find_element(
                             By.XPATH,
                             f"//button[@aria-label='Page {current_page + 1}']",
-                        )
+                                 )
                         self.driver.execute_script("arguments[0].click();", next_page_button)
                         time.sleep(2)
                         current_page += 1
@@ -582,66 +580,50 @@ class EasyApplyLinkedin:
         for element in form_elements:
             try:
                 label = element.find_element(By.CSS_SELECTOR, "label, legend")
-                input_field = element.find_element(By.CSS_SELECTOR, "input, select, textarea")
                 label_text = label.text.strip()
 
-                if input_field.tag_name == "input" and input_field.get_attribute("type") == "text":
-                    response = self.get_response_for_label(label_text)
-                    if input_field.get_attribute("value") == "":
+                if "data-test-checkbox-form-component" in element.get_attribute("outerHTML"):
+                    self.handle_checkboxes(element)
+                else:
+                    input_field = element.find_element(By.CSS_SELECTOR, "input, select, textarea")
+
+                    if input_field.tag_name == "input" and input_field.get_attribute("type") == "text":
+                        response = self.get_response_for_label(label_text)
+                        if input_field.get_attribute("value") == "":
+                            input_field.send_keys(response)
+                            time.sleep(1)
+                            input_field.send_keys(Keys.ARROW_DOWN)
+                            input_field.send_keys(Keys.RETURN)
+
+                    elif input_field.tag_name == "select":
+                        response = self.get_response_for_label(label_text)
+                        select_options = input_field.find_elements(By.TAG_NAME, "option")
+                        for option in select_options:
+                            if option.get_attribute("value") == response:
+                                option.click()
+                                break
+
+                    elif input_field.tag_name == "textarea":
+                        response = self.get_response_for_label(label_text)
+                        if input_field.get_attribute("value") == "":
+                            input_field.send_keys(response)
+
+                    elif input_field.tag_name == "input" and input_field.get_attribute("type") == "radio":
+                        radio_buttons = element.find_elements(By.CSS_SELECTOR, "input[type='radio']")
+                        for radio in radio_buttons:
+                            radio_label = radio.find_element(By.XPATH, "./following-sibling::label").text.strip()
+                            response = self.get_radio_response_for_label(label_text, [rb.find_element(By.XPATH, "./following-sibling::label").text.strip() for rb in radio_buttons])
+                            if response.lower() == radio_label.lower():
+                                try:
+                                    radio.click()
+                                except ElementClickInterceptedException:
+                                    self.driver.execute_script("arguments[0].click();", radio)
+                                break
+
+                    elif input_field.tag_name == "input" and input_field.get_attribute("type") == "file":
+                        response = self.get_file_response_for_label(label_text)
                         input_field.send_keys(response)
                         time.sleep(1)
-                        input_field.send_keys(Keys.ARROW_DOWN)
-                        input_field.send_keys(Keys.RETURN)
-
-                elif input_field.tag_name == "select":
-                    response = self.get_response_for_label(label_text)
-                    select_options = input_field.find_elements(By.TAG_NAME, "option")
-                    for option in select_options:
-                        if option.get_attribute("value") == response:
-                            option.click()
-                            break
-
-                elif input_field.tag_name == "textarea":
-                    response = self.get_response_for_label(label_text)
-                    if input_field.get_attribute("value") == "":
-                        input_field.send_keys(response)
-
-                elif input_field.tag_name == "input" and input_field.get_attribute("type") == "checkbox":
-                    checkboxes = element.find_elements(By.CSS_SELECTOR, "input[type='checkbox']")
-                    for checkbox in checkboxes:
-                        checkbox_label = checkbox.find_element(By.XPATH, "./following-sibling::label").text.strip()
-                        response = self.get_checkbox_response_for_label(checkbox_label)
-                        if response is not None:
-                            try:
-                                if response and not checkbox.is_selected():
-                                    self.driver.execute_script("arguments[0].click();", checkbox)
-                                elif not response and checkbox.is_selected():
-                                    self.driver.execute_script("arguments[0].click();", checkbox)
-                            except ElementClickInterceptedException:
-                                self.driver.execute_script("arguments[0].click();", checkbox)
-                            except StaleElementReferenceException:
-                                checkbox = element.find_element(By.XPATH, f".//input[@type='checkbox' and ./following-sibling::label[text()='{checkbox_label}']]")
-                                if response and not checkbox.is_selected():
-                                    self.driver.execute_script("arguments[0].click();", checkbox)
-                                elif not response and checkbox.is_selected():
-                                    self.driver.execute_script("arguments[0].click();", checkbox)
-
-                elif input_field.tag_name == "input" and input_field.get_attribute("type") == "radio":
-                    radio_buttons = element.find_elements(By.CSS_SELECTOR, "input[type='radio']")
-                    for radio in radio_buttons:
-                        radio_label = radio.find_element(By.XPATH, "./following-sibling::label").text.strip()
-                        response = self.get_radio_response_for_label(label_text, [rb.find_element(By.XPATH, "./following-sibling::label").text.strip() for rb in radio_buttons])
-                        if response.lower() == radio_label.lower():
-                            try:
-                                radio.click()
-                            except ElementClickInterceptedException:
-                                self.driver.execute_script("arguments[0].click();", radio)
-                            break
-
-                elif input_field.tag_name == "input" and input_field.get_attribute("type") == "file":
-                    response = self.get_file_response_for_label(label_text)
-                    input_field.send_keys(response)
-                    time.sleep(1)
 
             except NoSuchElementException:
                 continue
@@ -652,6 +634,30 @@ class EasyApplyLinkedin:
             time.sleep(2)
         except NoSuchElementException:
             self.log_info("Next button not found, form might be complete or there is an issue.")
+
+    def handle_checkboxes(self, element):
+        """Handle multiple checkbox inputs."""
+        checkboxes = element.find_elements(By.CSS_SELECTOR, "input[type='checkbox']")
+        for checkbox in checkboxes:
+            try:
+                checkbox_label = checkbox.find_element(By.XPATH, "./following-sibling::label").text.strip()
+                response = self.get_checkbox_response_for_label(checkbox_label)
+                if response is not None:
+                    if response and not checkbox.is_selected():
+                        self.driver.execute_script("arguments[0].click();", checkbox)
+                    elif not response and checkbox.is_selected():
+                        self.driver.execute_script("arguments[0].click();", checkbox)
+            except (ElementClickInterceptedException, StaleElementReferenceException):
+                self.log_info(f"Checkbox interaction failed for {checkbox_label}, attempting to retry.")
+                try:
+                    checkbox = element.find_element(By.XPATH, f".//input[@type='checkbox' and ./following-sibling::label[text()='{checkbox_label}']]")
+                    if response and not checkbox.is_selected():
+                        self.driver.execute_script("arguments[0].click();", checkbox)
+                    elif not response and checkbox.is_selected():
+                        self.driver.execute_script("arguments[0].click();", checkbox)
+                except NoSuchElementException:
+                    self.log_info(f"Checkbox not found after retry for {checkbox_label}.")
+                    continue
 
     def handle_done_button(self):
         """Handle the final done button after application submission."""
