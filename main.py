@@ -72,7 +72,7 @@ class EasyApplyLinkedin:
     }
 
     LOCATION_MAPPING = {
-        "Texas": "102748797",
+        "Texas":"102748797",
         "Canada": "101174742",
         "Portugal": "100364837",
         "Switzerland": "106693272",
@@ -246,7 +246,7 @@ class EasyApplyLinkedin:
                 search_keywords.click()
                 search_keywords.send_keys(Keys.RETURN)
 
-                time.sleep(5)  
+                time.sleep(5)  # wait for the search results to load
                 if not self.check_no_results():
                     break
                 else:
@@ -312,7 +312,7 @@ class EasyApplyLinkedin:
         while self.current_location_index < len(self.locations):
             search_url = self.construct_url()
             self.driver.get(search_url)
-            time.sleep(5)
+            time.sleep(5)  # wait for the search results to load
 
             if self.check_no_results():
                 self.log_info(f"No matching jobs found in {self.locations[self.current_location_index]}.")
@@ -353,24 +353,6 @@ class EasyApplyLinkedin:
         self.context_data["user_inputs"][current_location][label_text] = user_input
         self.update_config_file()
         return user_input
-
-    def get_checkbox_response_for_label(self, label_text):
-        """Get user response for a checkbox labeled by the given text."""
-        current_location = self.locations[self.current_location_index]
-        if current_location in self.context_data["user_inputs"]:
-            location_specific_inputs = self.context_data["user_inputs"][current_location]
-            if label_text in location_specific_inputs:
-                return location_specific_inputs[label_text]
-
-        while True:
-            user_input = input(f"Do you want to check the box for '{label_text}'? (yes/no): ").strip().lower()
-            if user_input in ["yes", "no"]:
-                response = user_input == "yes"
-                if current_location not in self.context_data["user_inputs"]:
-                    self.context_data["user_inputs"][current_location] = {}
-                self.context_data["user_inputs"][current_location][label_text] = response
-                self.update_config_file()
-                return response
 
     def get_radio_response_for_label(self, label_text, options):
         """Get user response for a radio button group labeled by the given text."""
@@ -419,7 +401,7 @@ class EasyApplyLinkedin:
         """Find and apply to job offers."""
         while self.current_location_index < len(self.locations):
             self.apply_filters_and_search()
-
+            
             current_page = 1
 
             while True:
@@ -440,11 +422,13 @@ class EasyApplyLinkedin:
                                 break
 
                             job_item = job_list_items[index]
-
+                            
+                            # Scroll the element into view
                             self.driver.execute_script("arguments[0].scrollIntoView(true);", job_item)
                             time.sleep(1)
-
+                            
                             try:
+                                # Attempt to click the element with JavaScript
                                 self.driver.execute_script("arguments[0].click();", job_item)
                             except ElementClickInterceptedException:
                                 self.log_info("Element click intercepted, skipping to next job...")
@@ -459,14 +443,14 @@ class EasyApplyLinkedin:
                             )
 
                             company_name = self.get_company_name(job_item)
-
+                            
                             if company_name in self.applied_companies:
                                 self.log_info(f"Already applied to a job at {company_name}, skipping...")
                                 self.close_application_modal()
                                 continue
 
                             job_details_wrapper = self.find_element_with_retry(By.CLASS_NAME, "jobs-search__job-details--wrapper")
-                  
+
                             try:
                                 apply_button = job_details_wrapper.find_element(
                                     By.CSS_SELECTOR, "button.jobs-apply-button.artdeco-button--primary"
@@ -501,7 +485,7 @@ class EasyApplyLinkedin:
                         next_page_button = pagination_container.find_element(
                             By.XPATH,
                             f"//button[@aria-label='Page {current_page + 1}']",
-                                 )
+                        )
                         self.driver.execute_script("arguments[0].click();", next_page_button)
                         time.sleep(2)
                         current_page += 1
@@ -638,26 +622,60 @@ class EasyApplyLinkedin:
     def handle_checkboxes(self, element):
         """Handle multiple checkbox inputs."""
         checkboxes = element.find_elements(By.CSS_SELECTOR, "input[type='checkbox']")
-        for checkbox in checkboxes:
+        for index in range(len(checkboxes)):
+            checkbox_label = None
             try:
+                checkbox = checkboxes[index]
                 checkbox_label = checkbox.find_element(By.XPATH, "./following-sibling::label").text.strip()
                 response = self.get_checkbox_response_for_label(checkbox_label)
                 if response is not None:
-                    if response and not checkbox.is_selected():
-                        self.driver.execute_script("arguments[0].click();", checkbox)
-                    elif not response and checkbox.is_selected():
-                        self.driver.execute_script("arguments[0].click();", checkbox)
-            except (ElementClickInterceptedException, StaleElementReferenceException):
-                self.log_info(f"Checkbox interaction failed for {checkbox_label}, attempting to retry.")
-                try:
-                    checkbox = element.find_element(By.XPATH, f".//input[@type='checkbox' and ./following-sibling::label[text()='{checkbox_label}']]")
-                    if response and not checkbox.is_selected():
-                        self.driver.execute_script("arguments[0].click();", checkbox)
-                    elif not response and checkbox.is_selected():
-                        self.driver.execute_script("arguments[0].click();", checkbox)
-                except NoSuchElementException:
-                    self.log_info(f"Checkbox not found after retry for {checkbox_label}.")
-                    continue
+                    self.set_checkbox_state(checkbox, checkbox_label, response)
+            except (ElementClickInterceptedException, StaleElementReferenceException) as e:
+                self.log_info(f"Checkbox interaction failed for {checkbox_label}, attempting to retry. Error: {e}")
+                self.retry_checkbox_interaction(element, index)
+
+    def retry_checkbox_interaction(self, element, index):
+        """Retry interaction with the checkbox in case of exceptions."""
+        retries = 3
+        while retries > 0:
+            retries -= 1
+            try:
+                checkboxes = element.find_elements(By.CSS_SELECTOR, "input[type='checkbox']")
+                checkbox = checkboxes[index]
+                checkbox_label = checkbox.find_element(By.XPATH, "./following-sibling::label").text.strip()
+                response = self.get_checkbox_response_for_label(checkbox_label)
+                if response is not None:
+                    self.set_checkbox_state(checkbox, checkbox_label, response)
+                return
+            except (NoSuchElementException, StaleElementReferenceException) as e:
+                self.log_info(f"Retry failed for {checkbox_label}. Error: {e}")
+                if retries == 0:
+                    self.log_info(f"Skipping {checkbox_label} after multiple retries.")
+
+    def set_checkbox_state(self, checkbox, checkbox_label, response):
+        """Set the state of a checkbox."""
+        if response and not checkbox.is_selected():
+            self.driver.execute_script("arguments[0].click();", checkbox)
+        elif not response and checkbox.is_selected():
+            self.driver.execute_script("arguments[0].click();", checkbox)
+
+    def get_checkbox_response_for_label(self, label_text):
+        """Get user response for a checkbox labeled by the given text."""
+        current_location = self.locations[self.current_location_index]
+        if current_location not in self.context_data["user_inputs"]:
+            self.context_data["user_inputs"][current_location] = {}
+
+        location_specific_inputs = self.context_data["user_inputs"][current_location]
+        if label_text in location_specific_inputs:
+            return location_specific_inputs[label_text]
+
+        while True:
+            user_input = input(f"Do you want to check the box for '{label_text}'? (yes/no): ").strip().lower()
+            if user_input in ["yes", "no"]:
+                response = user_input == "yes"
+                location_specific_inputs[label_text] = response
+                self.update_config_file()
+                return response
 
     def handle_done_button(self):
         """Handle the final done button after application submission."""
