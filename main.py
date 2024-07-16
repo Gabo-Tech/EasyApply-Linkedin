@@ -72,7 +72,7 @@ class EasyApplyLinkedin:
     }
 
     LOCATION_MAPPING = {
-        "Texas":"102748797",
+        "Texas": "102748797",
         "Canada": "101174742",
         "Portugal": "100364837",
         "Switzerland": "106693272",
@@ -188,7 +188,7 @@ class EasyApplyLinkedin:
                 'value': 'dark',
                 'domain': '.linkedin.com',
                 'path': '/',
-                'expires': int(time.time() + 365 * 24 * 60 * 60), 
+                'expires': int(time.time() + 365 * 24 * 60 * 60),
                 'secure': True,
                 'httpOnly': False
             })
@@ -263,9 +263,7 @@ class EasyApplyLinkedin:
     def construct_url(self):
         """Construct the URL for job search with applied filters."""
         current_location = self.locations[self.current_location_index]
-        keywords_query = f'({self.keywords})'
-        keywords_to_avoid_query = f'NOT ({self.keywords_to_avoid})'
-        combined_keywords = f'{keywords_query} {keywords_to_avoid_query}'
+        combined_keywords = f'{self.keywords} NOT {self.keywords_to_avoid}'
 
         params = {
             "keywords": combined_keywords,
@@ -559,15 +557,23 @@ class EasyApplyLinkedin:
     def fill_form(self, modal_dialog):
         """Fill out the application form."""
         form_elements = modal_dialog.find_elements(
-            By.CSS_SELECTOR, "div[data-test-form-element], fieldset[data-test-form-builder-radio-button-form-component], fieldset[data-test-checkbox-form-component]"
+            By.CSS_SELECTOR, "div[data-test-form-element], fieldset[data-test-form-builder-radio-button-form-component], fieldset[data-test-checkbox-form-component], div[data-test-text-entity-list-form-component]"
         )
         for element in form_elements:
             try:
-                label = element.find_element(By.CSS_SELECTOR, "label, legend")
+                label = element.find_element(By.CSS_SELECTOR, "label, legend, span[aria-hidden='true']")
                 label_text = label.text.strip()
 
                 if "data-test-checkbox-form-component" in element.get_attribute("outerHTML"):
                     self.handle_checkboxes(element)
+                elif "data-test-text-entity-list-form-component" in element.get_attribute("outerHTML"):
+                    select_element = element.find_element(By.CSS_SELECTOR, "select")
+                    options = [option.text for option in select_element.find_elements(By.TAG_NAME, "option")]
+                    response = self.get_radio_response_for_label(label_text, options[1:])  # Exclude "Select an option"
+                    for option in select_element.find_elements(By.TAG_NAME, "option"):
+                        if option.text == response:
+                            option.click()
+                            break
                 else:
                     input_field = element.find_element(By.CSS_SELECTOR, "input, select, textarea")
 
