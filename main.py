@@ -18,9 +18,14 @@ from selenium.common.exceptions import (
 )
 from selenium.webdriver.firefox.service import Service as FirefoxService
 
-
 class EasyApplyLinkedin:
     BASE_URL = "https://www.linkedin.com/jobs/search/"
+    COLLECTION_URLS = {
+        "small_business": "https://www.linkedin.com/jobs/collections/small-business",
+        "remote_jobs": "https://www.linkedin.com/jobs/collections/remote-jobs",
+        "easy_apply": "https://www.linkedin.com/jobs/collections/easy-apply",
+        "top_applicant": "https://www.linkedin.com/jobs/collections/top-applicant"
+    }
     ERROR_LOG_PATH = Path("error_log.json")
     APPLIED_COMPANIES_LOG_PATH = Path("applied_companies_log.json")
     FAILED_APPLICATIONS_LOG_PATH = Path("failed_applications_log.json")
@@ -89,13 +94,13 @@ class EasyApplyLinkedin:
     }
 
     def __init__(self, data):
-        """Initialize the EasyApplyLinkedin instance with user data."""
         self.email = data["email"]
         self.password = data["password"]
         self.keywords = " OR ".join(data["keywords"])
         self.keywords_to_avoid = " NOT ".join(data["keywordsToAvoid"])
         self.locations = data["locations"]
         self.filters = data["filters"]
+        self.collection = data.get("collection", "")
         self.sort_by = data["sortBy"]
         self.context_data = data
         self.current_location_index = 0
@@ -106,14 +111,12 @@ class EasyApplyLinkedin:
         self.init_logging()
 
     def init_logging(self):
-        """Initialize logging for error and applied companies."""
         logging.basicConfig(level=logging.INFO)
         self.error_logger = logging.getLogger("ErrorLogger")
         self.applied_companies = self.load_json(self.APPLIED_COMPANIES_LOG_PATH)
         self.failed_applications = self.load_json(self.FAILED_APPLICATIONS_LOG_PATH)
 
     def load_json(self, path):
-        """Load JSON data from the specified path."""
         if path.exists():
             try:
                 with path.open("r") as file:
@@ -124,12 +127,10 @@ class EasyApplyLinkedin:
         return {}
 
     def save_json(self, path, data):
-        """Save JSON data to the specified path."""
         with path.open("w") as file:
             json.dump(data, file, indent=4)
 
     def log_error(self, error_msg):
-        """Log error messages with a timestamp."""
         self.error_logger.error(error_msg)
         errors = self.load_json(self.ERROR_LOG_PATH)
         errors[str(datetime.now())] = error_msg
@@ -137,24 +138,20 @@ class EasyApplyLinkedin:
         self.cleanup_error_log()
 
     def log_info(self, message):
-        """Log informational messages."""
         logging.info(message)
 
     def cleanup_error_log(self):
-        """Clean up old error logs older than 1 day."""
         errors = self.load_json(self.ERROR_LOG_PATH)
         cutoff = datetime.now() - timedelta(days=1)
         errors = {k: v for k, v in errors.items() if datetime.fromisoformat(k) > cutoff}
         self.save_json(self.ERROR_LOG_PATH, errors)
 
     def log_applied_company(self, company):
-        """Log the company to which an application was submitted."""
         self.applied_companies[company] = str(datetime.now())
         self.save_json(self.APPLIED_COMPANIES_LOG_PATH, self.applied_companies)
         self.cleanup_applied_companies_log()
 
     def cleanup_applied_companies_log(self):
-        """Clean up logs of applied companies older than 2 weeks."""
         cutoff = datetime.now() - timedelta(weeks=2)
         self.applied_companies = {
             k: v
@@ -164,13 +161,11 @@ class EasyApplyLinkedin:
         self.save_json(self.APPLIED_COMPANIES_LOG_PATH, self.applied_companies)
 
     def log_failed_application(self, company):
-        """Log the company where application failed."""
         self.failed_applications[company] = str(datetime.now())
         self.save_json(self.FAILED_APPLICATIONS_LOG_PATH, self.failed_applications)
         self.cleanup_failed_applications_log()
 
     def cleanup_failed_applications_log(self):
-        """Clean up logs of failed applications older than 2 weeks."""
         cutoff = datetime.now() - timedelta(weeks=2)
         self.failed_applications = {
             k: v
@@ -180,7 +175,6 @@ class EasyApplyLinkedin:
         self.save_json(self.FAILED_APPLICATIONS_LOG_PATH, self.failed_applications)
 
     def login_linkedin(self):
-        """Log in to LinkedIn using the provided credentials."""
         try:
             self.driver.get("https://www.linkedin.com/login")
             self.driver.add_cookie({
@@ -213,7 +207,6 @@ class EasyApplyLinkedin:
             self.log_error(f"Login error: {e}")
 
     def job_search(self):
-        """Perform job search based on keywords and locations."""
         while self.current_location_index < len(self.locations):
             try:
                 WebDriverWait(self.driver, 20).until(
@@ -227,8 +220,7 @@ class EasyApplyLinkedin:
                     )
                 )
                 search_keywords = self.driver.find_element(
-                    By.CSS_SELECTOR, "input[aria-label='Search by title, skill, or company']"
-                )
+                    By.CSS_SELECTOR, "input[aria-label='Search by title, skill, or company']")
                 search_keywords.clear()
                 search_keywords.send_keys(self.keywords)
                 search_keywords.send_keys(" NOT ")
@@ -239,14 +231,13 @@ class EasyApplyLinkedin:
                     )
                 )
                 search_location = self.driver.find_element(
-                    By.CSS_SELECTOR, "input[aria-label='City, state, or zip code']"
-                )
+                    By.CSS_SELECTOR, "input[aria-label='City, state, or zip code']")
                 search_location.clear()
                 search_location.send_keys(self.locations[self.current_location_index])
                 search_keywords.click()
                 search_keywords.send_keys(Keys.RETURN)
 
-                time.sleep(5)  # wait for the search results to load
+                time.sleep(5)
                 if not self.check_no_results():
                     break
                 else:
@@ -261,7 +252,6 @@ class EasyApplyLinkedin:
                 self.current_location_index += 1
 
     def construct_url(self):
-        """Construct the URL for job search with applied filters."""
         current_location = self.locations[self.current_location_index]
         combined_keywords = f'{self.keywords} NOT {self.keywords_to_avoid}'
 
@@ -306,11 +296,10 @@ class EasyApplyLinkedin:
         return url
 
     def apply_filters_and_search(self):
-        """Apply filters to the job search and navigate to the search URL."""
         while self.current_location_index < len(self.locations):
             search_url = self.construct_url()
             self.driver.get(search_url)
-            time.sleep(5)  # wait for the search results to load
+            time.sleep(5)
 
             if self.check_no_results():
                 self.log_info(f"No matching jobs found in {self.locations[self.current_location_index]}.")
@@ -319,7 +308,6 @@ class EasyApplyLinkedin:
                 break
 
     def check_no_results(self):
-        """Check if the job search resulted in no matches."""
         try:
             no_results_element = self.driver.find_element(
                 By.CSS_SELECTOR, "div.jobs-search-no-results-banner"
@@ -329,7 +317,6 @@ class EasyApplyLinkedin:
             return False
 
     def find_element_with_retry(self, by, value, retries=3, delay=2):
-        """Find an element with retry logic."""
         for _ in range(retries):
             try:
                 return self.driver.find_element(by, value)
@@ -338,7 +325,6 @@ class EasyApplyLinkedin:
         raise NoSuchElementException(f"Element not found: {by}, {value}")
 
     def get_response_for_label(self, label_text):
-        """Get user response for a given label text."""
         current_location = self.locations[self.current_location_index]
         if current_location in self.context_data["user_inputs"]:
             location_specific_inputs = self.context_data["user_inputs"][current_location]
@@ -353,7 +339,6 @@ class EasyApplyLinkedin:
         return user_input
 
     def get_radio_response_for_label(self, label_text, options):
-        """Get user response for a radio button group labeled by the given text."""
         current_location = self.locations[self.current_location_index]
         if current_location in self.context_data["user_inputs"]:
             location_specific_inputs = self.context_data["user_inputs"][current_location]
@@ -376,7 +361,6 @@ class EasyApplyLinkedin:
                 print("Invalid input, please try again.")
 
     def get_file_response_for_label(self, label_text):
-        """Get user response for a file upload labeled by the given text."""
         current_location = self.locations[self.current_location_index]
         if current_location in self.context_data["user_inputs"]:
             location_specific_inputs = self.context_data["user_inputs"][current_location]
@@ -391,15 +375,19 @@ class EasyApplyLinkedin:
         return user_input
 
     def update_config_file(self):
-        """Update the configuration file with the latest user inputs."""
         with open("config.json", "w") as config_file:
             json.dump(self.context_data, config_file, indent=4)
 
     def find_offers(self):
-        """Find and apply to job offers."""
+        if self.collection:
+            self.apply_collection()
+        else:
+            self.apply_filtered_jobs()
+
+    def apply_filtered_jobs(self):
         while self.current_location_index < len(self.locations):
             self.apply_filters_and_search()
-            
+
             current_page = 1
 
             while True:
@@ -420,13 +408,10 @@ class EasyApplyLinkedin:
                                 break
 
                             job_item = job_list_items[index]
-                            
-                            # Scroll the element into view
                             self.driver.execute_script("arguments[0].scrollIntoView(true);", job_item)
                             time.sleep(1)
-                            
+
                             try:
-                                # Attempt to click the element with JavaScript
                                 self.driver.execute_script("arguments[0].click();", job_item)
                             except ElementClickInterceptedException:
                                 self.log_info("Element click intercepted, skipping to next job...")
@@ -441,7 +426,7 @@ class EasyApplyLinkedin:
                             )
 
                             company_name = self.get_company_name(job_item)
-                            
+
                             if company_name in self.applied_companies:
                                 self.log_info(f"Already applied to a job at {company_name}, skipping...")
                                 self.close_application_modal()
@@ -497,8 +482,108 @@ class EasyApplyLinkedin:
 
             self.current_location_index += 1
 
+    def apply_collection(self):
+        collection_url = self.COLLECTION_URLS.get(self.collection)
+        if not collection_url:
+            self.log_error(f"Invalid collection: {self.collection}")
+            return
+
+        self.driver.get(collection_url)
+        time.sleep(5)
+
+        current_page = 1
+
+        while True:
+            try:
+                WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, "scaffold-layout__list-container"))
+                )
+
+                job_list_container = self.find_element_with_retry(By.CLASS_NAME, "scaffold-layout__list-container")
+                job_list_items = job_list_container.find_elements(By.TAG_NAME, "li")
+
+                for index in range(len(job_list_items)):
+                    try:
+                        job_list_container = self.find_element_with_retry(By.CLASS_NAME, "scaffold-layout__list-container")
+                        job_list_items = job_list_container.find_elements(By.TAG_NAME, "li")
+
+                        if index >= len(job_list_items):
+                            break
+
+                        job_item = job_list_items[index]
+                        self.driver.execute_script("arguments[0].scrollIntoView(true);", job_item)
+                        time.sleep(1)
+
+                        try:
+                            self.driver.execute_script("arguments[0].click();", job_item)
+                        except ElementClickInterceptedException:
+                            self.log_info("Element click intercepted, skipping to next job...")
+                            continue
+
+                        time.sleep(2)
+
+                        WebDriverWait(self.driver, 10).until(
+                            EC.presence_of_element_located(
+                                (By.CLASS_NAME, "jobs-search__job-details--wrapper")
+                            )
+                        )
+
+                        company_name = self.get_company_name(job_item)
+
+                        if company_name in self.applied_companies:
+                            self.log_info(f"Already applied to a job at {company_name}, skipping...")
+                            self.close_application_modal()
+                            continue
+
+                        job_details_wrapper = self.find_element_with_retry(By.CLASS_NAME, "jobs-search__job-details--wrapper")
+
+                        try:
+                            apply_button = job_details_wrapper.find_element(
+                                By.CSS_SELECTOR, "button.jobs-apply-button.artdeco-button--primary"
+                            )
+                            apply_button.click()
+                            time.sleep(2)
+
+                            WebDriverWait(self.driver, 10).until(
+                                EC.presence_of_element_located(
+                                    (By.CSS_SELECTOR, "div.jobs-easy-apply-modal")
+                                )
+                            )
+
+                            try:
+                                self.handle_easy_apply()
+                                self.log_applied_company(company_name)
+                            except Exception as e:
+                                self.log_info(f"Failed to apply at {company_name}: {str(e)}")
+                                self.log_failed_application(company_name)
+
+                        except NoSuchElementException:
+                            self.log_info("No apply button found, continuing to next job...")
+                            continue
+
+                    except (NoSuchElementException, ElementNotInteractableException, StaleElementReferenceException) as e:
+                        self.log_info(f"Exception occurred: {e}, continuing to next job...")
+                        self.log_error(f"Find offers error: {e}")
+                        continue
+
+                try:
+                    pagination_container = self.find_element_with_retry(By.CLASS_NAME, "artdeco-pagination__pages")
+                    next_page_button = pagination_container.find_element(
+                        By.XPATH,
+                        f"//button[@aria-label='Page {current_page + 1}']",
+                    )
+                    self.driver.execute_script("arguments[0].click();", next_page_button)
+                    time.sleep(2)
+                    current_page += 1
+                except NoSuchElementException:
+                    self.log_info("No more pages left.")
+                    break
+            except TimeoutException:
+                self.log_info("Timeout while waiting for job list container.")
+                self.log_error("Timeout while waiting for job list container.")
+                break
+
     def get_company_name(self, job_item):
-        """Extract the company name from a job listing."""
         try:
             company_element = job_item.find_element(
                 By.CSS_SELECTOR,
@@ -509,7 +594,6 @@ class EasyApplyLinkedin:
             return None
 
     def handle_easy_apply(self):
-        """Handle the easy apply process."""
         while True:
             try:
                 modal_dialog = WebDriverWait(self.driver, 10).until(
@@ -555,7 +639,6 @@ class EasyApplyLinkedin:
                 break
 
     def fill_form(self, modal_dialog):
-        """Fill out the application form."""
         form_elements = modal_dialog.find_elements(
             By.CSS_SELECTOR, "div[data-test-form-element], fieldset[data-test-form-builder-radio-button-form-component], fieldset[data-test-checkbox-form-component], div[data-test-text-entity-list-form-component]"
         )
@@ -569,7 +652,7 @@ class EasyApplyLinkedin:
                 elif "data-test-text-entity-list-form-component" in element.get_attribute("outerHTML"):
                     select_element = element.find_element(By.CSS_SELECTOR, "select")
                     options = [option.text for option in select_element.find_elements(By.TAG_NAME, "option")]
-                    response = self.get_radio_response_for_label(label_text, options[1:])  # Exclude "Select an option"
+                    response = self.get_radio_response_for_label(label_text, options[1:])
                     for option in select_element.find_elements(By.TAG_NAME, "option"):
                         if option.text == response:
                             option.click()
@@ -626,7 +709,6 @@ class EasyApplyLinkedin:
             self.log_info("Next button not found, form might be complete or there is an issue.")
 
     def handle_checkboxes(self, element):
-        """Handle multiple checkbox inputs."""
         checkboxes = element.find_elements(By.CSS_SELECTOR, "input[type='checkbox']")
         for index in range(len(checkboxes)):
             checkbox_label = None
@@ -641,7 +723,6 @@ class EasyApplyLinkedin:
                 self.retry_checkbox_interaction(element, index)
 
     def retry_checkbox_interaction(self, element, index):
-        """Retry interaction with the checkbox in case of exceptions."""
         retries = 3
         while retries > 0:
             retries -= 1
@@ -659,14 +740,12 @@ class EasyApplyLinkedin:
                     self.log_info(f"Skipping {checkbox_label} after multiple retries.")
 
     def set_checkbox_state(self, checkbox, checkbox_label, response):
-        """Set the state of a checkbox."""
         if response and not checkbox.is_selected():
             self.driver.execute_script("arguments[0].click();", checkbox)
         elif not response and checkbox.is_selected():
             self.driver.execute_script("arguments[0].click();", checkbox)
 
     def get_checkbox_response_for_label(self, label_text):
-        """Get user response for a checkbox labeled by the given text."""
         current_location = self.locations[self.current_location_index]
         if current_location not in self.context_data["user_inputs"]:
             self.context_data["user_inputs"][current_location] = {}
@@ -684,7 +763,6 @@ class EasyApplyLinkedin:
                 return response
 
     def handle_done_button(self):
-        """Handle the final done button after application submission."""
         try:
             done_button = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "button.artdeco-button.artdeco-button--primary"))
@@ -695,7 +773,6 @@ class EasyApplyLinkedin:
             self.log_info("Done button not found, skipping to next job.")
 
     def close_application_modal(self):
-        """Close the application modal."""
         try:
             close_button = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located(
@@ -712,7 +789,6 @@ class EasyApplyLinkedin:
             self.log_info("Close button not found, skipping to next job.")
 
     def handle_discard_dialog(self):
-        """Handle the discard dialog when closing the application modal."""
         try:
             discard_button = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located(
@@ -725,15 +801,12 @@ class EasyApplyLinkedin:
             self.log_info("Discard button not found, skipping to next job.")
 
     def close_session(self):
-        """Close the browser session."""
         self.log_info("End of the session")
         self.driver.close()
         self.driver.quit()
 
     def handle_captcha(self):
-        """Handle CAPTCHA prompts manually."""
         input("CAPTCHA detected. Please solve the CAPTCHA manually and then press Enter to continue...")
-
 
 if __name__ == "__main__":
     with open("config.json") as config_file:

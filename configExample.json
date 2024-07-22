@@ -68,6 +68,7 @@
       ],
       "less_than_10_applicants": false
   },
+  "collection": "",
   "aiContext": {
       "preferences": {
           "workplaceType": "Remote",
