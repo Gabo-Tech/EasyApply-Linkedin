@@ -1,10 +1,7 @@
+import argparse
 import json
 import time
 import urllib.parse
-import logging
-from datetime import datetime, timedelta
-from pathlib import Path
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -16,9 +13,11 @@ from selenium.common.exceptions import (
     TimeoutException,
     ElementClickInterceptedException,
 )
-from selenium.webdriver.firefox.service import Service as FirefoxService
 
-class EasyApplyLinkedin:
+from base_easy_apply import BaseEasyApply
+
+
+class EasyApplyLinkedin(BaseEasyApply):
     BASE_URL = "https://www.linkedin.com/jobs/search/"
     COLLECTION_URLS = {
         "small_business": "https://www.linkedin.com/jobs/collections/small-business",
@@ -26,9 +25,6 @@ class EasyApplyLinkedin:
         "easy_apply": "https://www.linkedin.com/jobs/collections/easy-apply",
         "top_applicant": "https://www.linkedin.com/jobs/collections/top-applicant"
     }
-    ERROR_LOG_PATH = Path("error_log.json")
-    APPLIED_COMPANIES_LOG_PATH = Path("applied_companies_log.json")
-    FAILED_APPLICATIONS_LOG_PATH = Path("failed_applications_log.json")
 
     TIME_POSTED_MAPPING = {
         "Any Time": "",
@@ -94,85 +90,27 @@ class EasyApplyLinkedin:
     }
 
     def __init__(self, data):
-        self.email = data["email"]
-        self.password = data["password"]
-        self.keywords = " OR ".join(data["keywords"])
-        self.keywords_to_avoid = " NOT ".join(data["keywordsToAvoid"])
-        self.locations = data["locations"]
-        self.filters = data["filters"]
+        super().__init__(data, start_driver=True)
         self.collection = data.get("collection", "")
         self.sort_by = data["sortBy"]
-        self.context_data = data
-        self.current_location_index = 0
-        if "user_inputs" not in self.context_data:
-            self.context_data["user_inputs"] = {}
-        firefox_service = FirefoxService(executable_path=data["driver_path"])
-        self.driver = webdriver.Firefox(service=firefox_service)
-        self.init_logging()
+        self.locations = data["locations"]
+        self.filters = data["filters"]
 
-    def init_logging(self):
-        logging.basicConfig(level=logging.INFO)
-        self.error_logger = logging.getLogger("ErrorLogger")
-        self.applied_companies = self.load_json(self.APPLIED_COMPANIES_LOG_PATH)
-        self.failed_applications = self.load_json(self.FAILED_APPLICATIONS_LOG_PATH)
-
-    def load_json(self, path):
-        if path.exists():
-            try:
-                with path.open("r") as file:
-                    return json.load(file)
-            except json.JSONDecodeError:
-                self.log_error(f"Error decoding JSON from {path}")
-                return {}
-        return {}
-
-    def save_json(self, path, data):
-        with path.open("w") as file:
-            json.dump(data, file, indent=4)
-
-    def log_error(self, error_msg):
-        self.error_logger.error(error_msg)
-        errors = self.load_json(self.ERROR_LOG_PATH)
-        errors[str(datetime.now())] = error_msg
-        self.save_json(self.ERROR_LOG_PATH, errors)
-        self.cleanup_error_log()
-
-    def log_info(self, message):
-        logging.info(message)
-
-    def cleanup_error_log(self):
-        errors = self.load_json(self.ERROR_LOG_PATH)
-        cutoff = datetime.now() - timedelta(days=1)
-        errors = {k: v for k, v in errors.items() if datetime.fromisoformat(k) > cutoff}
-        self.save_json(self.ERROR_LOG_PATH, errors)
-
-    def log_applied_company(self, company):
-        self.applied_companies[company] = str(datetime.now())
-        self.save_json(self.APPLIED_COMPANIES_LOG_PATH, self.applied_companies)
-        self.cleanup_applied_companies_log()
-
-    def cleanup_applied_companies_log(self):
-        cutoff = datetime.now() - timedelta(weeks=2)
-        self.applied_companies = {
-            k: v
-            for k, v in self.applied_companies.items()
-            if datetime.fromisoformat(v) > cutoff
-        }
-        self.save_json(self.APPLIED_COMPANIES_LOG_PATH, self.applied_companies)
-
-    def log_failed_application(self, company):
-        self.failed_applications[company] = str(datetime.now())
-        self.save_json(self.FAILED_APPLICATIONS_LOG_PATH, self.failed_applications)
-        self.cleanup_failed_applications_log()
-
-    def cleanup_failed_applications_log(self):
-        cutoff = datetime.now() - timedelta(weeks=2)
-        self.failed_applications = {
-            k: v
-            for k, v in self.failed_applications.items()
-            if datetime.fromisoformat(v) > cutoff
-        }
-        self.save_json(self.FAILED_APPLICATIONS_LOG_PATH, self.failed_applications)
+    def _gather_application_text(self, label_text=""):
+        chunks = [label_text or ""]
+        try:
+            modal = self.driver.find_element(
+                By.CSS_SELECTOR, "div.artdeco-modal--layer-default.jobs-easy-apply-modal"
+            )
+            chunks.append(modal.text or "")
+        except Exception:
+            pass
+        try:
+            details = self.driver.find_element(By.CLASS_NAME, "jobs-search__job-details--wrapper")
+            chunks.append((details.text or "")[:2000])
+        except Exception:
+            pass
+        return "\n".join(chunks)
 
     def login_linkedin(self):
         try:
@@ -315,68 +253,6 @@ class EasyApplyLinkedin:
             return no_results_element.is_displayed()
         except NoSuchElementException:
             return False
-
-    def find_element_with_retry(self, by, value, retries=3, delay=2):
-        for _ in range(retries):
-            try:
-                return self.driver.find_element(by, value)
-            except (NoSuchElementException, StaleElementReferenceException):
-                time.sleep(delay)
-        raise NoSuchElementException(f"Element not found: {by}, {value}")
-
-    def get_response_for_label(self, label_text):
-        current_location = self.locations[self.current_location_index]
-        if current_location in self.context_data["user_inputs"]:
-            location_specific_inputs = self.context_data["user_inputs"][current_location]
-            if label_text in location_specific_inputs:
-                return location_specific_inputs[label_text]
-
-        user_input = input(f"Please provide the answer for '{label_text}': ")
-        if current_location not in self.context_data["user_inputs"]:
-            self.context_data["user_inputs"][current_location] = {}
-        self.context_data["user_inputs"][current_location][label_text] = user_input
-        self.update_config_file()
-        return user_input
-
-    def get_radio_response_for_label(self, label_text, options):
-        current_location = self.locations[self.current_location_index]
-        if current_location in self.context_data["user_inputs"]:
-            location_specific_inputs = self.context_data["user_inputs"][current_location]
-            if label_text in location_specific_inputs:
-                return location_specific_inputs[label_text]
-
-        while True:
-            print(f"Please select an option for '{label_text}':")
-            for i, option in enumerate(options):
-                print(f"{i + 1}. {option}")
-            user_input = input("Enter the number of your choice: ").strip()
-            if user_input.isdigit() and 1 <= int(user_input) <= len(options):
-                response = options[int(user_input) - 1]
-                if current_location not in self.context_data["user_inputs"]:
-                    self.context_data["user_inputs"][current_location] = {}
-                self.context_data["user_inputs"][current_location][label_text] = response
-                self.update_config_file()
-                return response
-            else:
-                print("Invalid input, please try again.")
-
-    def get_file_response_for_label(self, label_text):
-        current_location = self.locations[self.current_location_index]
-        if current_location in self.context_data["user_inputs"]:
-            location_specific_inputs = self.context_data["user_inputs"][current_location]
-            if label_text in location_specific_inputs:
-                return location_specific_inputs[label_text]
-
-        user_input = input(f"Please provide the file location for '{label_text}': ")
-        if current_location not in self.context_data["user_inputs"]:
-            self.context_data["user_inputs"][current_location] = {}
-        self.context_data["user_inputs"][current_location][label_text] = user_input
-        self.update_config_file()
-        return user_input
-
-    def update_config_file(self):
-        with open("config.json", "w") as config_file:
-            json.dump(self.context_data, config_file, indent=4)
 
     def find_offers(self):
         if self.collection:
@@ -644,8 +520,27 @@ class EasyApplyLinkedin:
         )
         for element in form_elements:
             try:
-                label = element.find_element(By.CSS_SELECTOR, "label, legend, span[aria-hidden='true']")
-                label_text = label.text.strip()
+                try:
+                    label = element.find_element(By.CSS_SELECTOR, "label, legend, span[aria-hidden='true']")
+                    label_text = label.text.strip()
+                except NoSuchElementException:
+                    self.log_info("No label found for a form element, skipping...")
+                    continue
+
+                if "notice period" in label_text.lower() or "kündigungsfrist" in label_text.lower():
+                    input_field = element.find_element(By.CSS_SELECTOR, "input[type='text']")
+                    if input_field.get_attribute("value") == "":
+                        notice = (
+                            (self.context_data.get("aiContext") or {})
+                            .get("user_data", {})
+                            .get("noticePeriodDays", 30)
+                        )
+                        self.log_info(f"Filling notice period with {notice} for field: {label_text}")
+                        input_field.clear()
+                        input_field.send_keys(str(notice))
+                        time.sleep(1)
+                        input_field.send_keys(Keys.RETURN)
+                    continue
 
                 if "data-test-checkbox-form-component" in element.get_attribute("outerHTML"):
                     self.handle_checkboxes(element)
@@ -698,7 +593,14 @@ class EasyApplyLinkedin:
                         input_field.send_keys(response)
                         time.sleep(1)
 
-            except NoSuchElementException:
+            except NoSuchElementException as e:
+                self.log_error(f"Element not found for a form field, error: {e}")
+                continue
+            except ElementNotInteractableException as e:
+                self.log_error(f"Element not interactable for a form field, error: {e}")
+                continue
+            except Exception as e:
+                self.log_error(f"Unexpected error while processing form field: {e}")
                 continue
 
         try:
@@ -745,23 +647,6 @@ class EasyApplyLinkedin:
         elif not response and checkbox.is_selected():
             self.driver.execute_script("arguments[0].click();", checkbox)
 
-    def get_checkbox_response_for_label(self, label_text):
-        current_location = self.locations[self.current_location_index]
-        if current_location not in self.context_data["user_inputs"]:
-            self.context_data["user_inputs"][current_location] = {}
-
-        location_specific_inputs = self.context_data["user_inputs"][current_location]
-        if label_text in location_specific_inputs:
-            return location_specific_inputs[label_text]
-
-        while True:
-            user_input = input(f"Do you want to check the box for '{label_text}'? (yes/no): ").strip().lower()
-            if user_input in ["yes", "no"]:
-                response = user_input == "yes"
-                location_specific_inputs[label_text] = response
-                self.update_config_file()
-                return response
-
     def handle_done_button(self):
         try:
             done_button = WebDriverWait(self.driver, 10).until(
@@ -800,19 +685,34 @@ class EasyApplyLinkedin:
         except TimeoutException:
             self.log_info("Discard button not found, skipping to next job.")
 
-    def close_session(self):
-        self.log_info("End of the session")
-        self.driver.close()
-        self.driver.quit()
 
-    def handle_captcha(self):
-        input("CAPTCHA detected. Please solve the CAPTCHA manually and then press Enter to continue...")
+def main():
+    parser = argparse.ArgumentParser(description="Easy Apply automation for LinkedIn / Indeed")
+    parser.add_argument(
+        "--platform",
+        choices=["linkedin", "indeed"],
+        default="linkedin",
+        help="Which job board to automate (default: linkedin)",
+    )
+    args = parser.parse_args()
 
-if __name__ == "__main__":
     with open("config.json") as config_file:
         data = json.load(config_file)
-    bot = EasyApplyLinkedin(data)
-    bot.login_linkedin()
-    bot.job_search()
-    bot.find_offers()
-    bot.close_session()
+
+    if args.platform == "indeed":
+        from indeed_bot import EasyApplyIndeed
+
+        bot = EasyApplyIndeed(data)
+        bot.login_indeed()
+        bot.find_offers()
+        bot.close_session()
+    else:
+        bot = EasyApplyLinkedin(data)
+        bot.login_linkedin()
+        bot.job_search()
+        bot.find_offers()
+        bot.close_session()
+
+
+if __name__ == "__main__":
+    main()

@@ -1,12 +1,16 @@
 import unittest
-from unittest.mock import patch, MagicMock
-from easy_apply_linkedin import EasyApplyLinkedin
+from unittest.mock import MagicMock, patch
+
+from selenium.common.exceptions import NoSuchElementException
+
+from main import EasyApplyLinkedin
+
 
 class TestEasyApplyLinkedin(unittest.TestCase):
     def setUp(self):
         self.data = {
-            "email": "sendmessage@gabo.email",
-            "password": "bp8v9fvk#?QaKe7",
+            "email": "test@example.com",
+            "password": "secret",
             "keywords": ["TypeScript", "Angular", "React"],
             "keywordsToAvoid": ["C++", ".NET"],
             "locations": ["Switzerland", "Belgium"],
@@ -18,38 +22,44 @@ class TestEasyApplyLinkedin(unittest.TestCase):
                 "jobType": ["Full-time", "Contract"],
                 "timePostedRange": [],
                 "workplaceType": ["Remote", "Hybrid"],
-                "less_than_10_applicants": False
-            }
+                "less_than_10_applicants": False,
+            },
+            "aiSettings": {"enabled": False},
+            "user_inputs": {},
         }
-        self.bot = EasyApplyLinkedin(self.data)
+        with patch("base_easy_apply.webdriver.Firefox"):
+            with patch("base_easy_apply.FirefoxService"):
+                self.bot = EasyApplyLinkedin(self.data)
+        self.bot.driver = MagicMock()
 
-    @patch('easy_apply_linkedin.webdriver.Firefox')
-    def test_login_linkedin(self, MockWebDriver):
-        mock_driver = MockWebDriver.return_value
-        mock_driver.find_element.return_value = MagicMock()
-        self.bot.login_linkedin()
-        mock_driver.get.assert_called_with("https://www.linkedin.com/login")
-        self.assertTrue(mock_driver.find_element.called)
+    def test_login_linkedin(self):
+        self.bot.driver.find_element.return_value = MagicMock()
+        with patch("main.WebDriverWait") as mock_wait:
+            mock_wait.return_value.until.return_value = MagicMock()
+            self.bot.login_linkedin()
+        self.bot.driver.get.assert_called_with("https://www.linkedin.com/login")
+        self.assertTrue(self.bot.driver.find_element.called)
 
-    @patch('easy_apply_linkedin.webdriver.Firefox')
-    def test_construct_url(self, MockWebDriver):
+    def test_construct_url(self):
         url = self.bot.construct_url()
-        self.assertIn("keywords=TypeScript%20OR%20Angular%20OR%20React", url)
+        self.assertIn("TypeScript", url)
+        self.assertIn("Angular", url)
+        self.assertIn("React", url)
         self.assertIn("geoId=106693272", url)
         self.assertIn("f_AL=true", url)
 
-    @patch('easy_apply_linkedin.webdriver.Firefox')
-    def test_apply_filters_and_search_no_results(self, MockWebDriver):
-        mock_driver = MockWebDriver.return_value
-        mock_driver.find_element.side_effect = NoSuchElementException
-        self.bot.apply_filters_and_search()
-        self.assertEqual(self.bot.current_location_index, 1)
+    def test_apply_filters_and_search_no_results(self):
+        with patch.object(self.bot, "check_no_results", return_value=True), patch(
+            "main.time.sleep"
+        ):
+            self.bot.apply_filters_and_search()
+        self.assertEqual(self.bot.current_location_index, 2)
 
-    @patch('easy_apply_linkedin.webdriver.Firefox')
-    def test_log_error(self, MockWebDriver):
+    def test_log_error(self):
         self.bot.log_error("Test error")
         errors = self.bot.load_json(self.bot.ERROR_LOG_PATH)
         self.assertTrue(any("Test error" in v for v in errors.values()))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -70,10 +70,35 @@
   },
   "collection": "",
   "aiContext": {
+      "user_data": {
+          "linkedin_url": "https://www.linkedin.com/in/example",
+          "github_url": "https://github.com/example",
+          "portfolio_url": "https://example.dev/",
+          "phone": "+41 76 000 00 00",
+          "phoneCountryCode": "Switzerland (+41)",
+          "phoneNationalNumber": "760000000",
+          "email": "example@domain.com",
+          "address": "Nordstrasse 70, 8006 Zurich, Switzerland",
+          "street": "Nordstrasse 70",
+          "city": "Zurich",
+          "postalCode": "8006",
+          "country": "Switzerland",
+          "currentLocation": "Zurich, Switzerland",
+          "nationality": "Spain",
+          "workPermit": "Swiss B Permit (EU/EFTA)",
+          "noticePeriodDays": 30,
+          "availability": "1 Month Notice Period"
+      },
+      "languagesSpokenByUser": {
+          "English": "Full Professional / Native (C1/C2)",
+          "Spanish": "Native (C2)",
+          "German": "Basic (A1/A2)"
+      },
       "preferences": {
           "workplaceType": "Remote",
           "workplaceTypeAlternative": [
-              "Hybrid"
+              "Hybrid",
+              "On-site"
           ],
           "jobType": "Contract",
           "jobTypeAlternative": [
@@ -83,10 +108,28 @@
           "prereferredEndAlternative": [
               "Full-Stack",
               "Frontend"
-          ]
+          ],
+          "willingToRelocate": true,
+          "relocateTarget": "Zug, Switzerland",
+          "remoteAnywhere": true,
+          "officeLocationsOnly": ["Zurich", "Zug", "Zürich"],
+          "onsiteOnlyIn": ["Zurich", "Zug", "Zürich"]
       },
-      "currentLocation": "Fake City, Country",
-      "willingToRelocate": true,
+      "workAuthorization": {
+          "switzerland": {
+              "authorized": true,
+              "requiresSponsorship": false,
+              "permit": "Swiss B Permit (EU/EFTA)"
+          },
+          "eu": {
+              "authorized": true,
+              "requiresSponsorship": false
+          },
+          "default": {
+              "authorized": false,
+              "requiresSponsorship": true
+          }
+      },
       "experience": [
           {
               "title": "Full-Stack Developer",
@@ -154,6 +197,59 @@
           "HTML",
           "CSS"
       ]
+  },
+  "aiSettings": {
+      "enabled": true,
+      "primary": "ollama",
+      "ollama": {
+          "baseUrl": "http://localhost:11434",
+          "model": "qwen2.5:3b-instruct",
+          "timeoutSeconds": 30
+      },
+      "fallback": {
+          "model": "Qwen/Qwen2.5-1.5B-Instruct",
+          "device": "auto"
+      },
+      "retrieval": {
+          "embeddingModel": "sentence-transformers/all-MiniLM-L6-v2",
+          "similarityThreshold": 0.85
+      },
+      "defaults": {
+          "salaryExpectationUsd": "90000",
+          "hourlyRateRange": "40-60",
+          "requiresSponsorship": false,
+          "willingToRelocate": true,
+          "noticePeriodDays": 30,
+          "relocateTarget": "Zug, Switzerland"
+      },
+      "style": {
+          "maxWords": 40,
+          "forbiddenPatterns": [
+              "—",
+              "Furthermore",
+              "I am excited",
+              "I am passionate"
+          ]
+      }
+  },
+  "resumes": {
+      "en": "resumes/Resume_Gabriel_Clemente.pdf",
+      "de": "resumes/Lebenslauf_Gabriel_Clemente.pdf",
+      "default": "en"
+  },
+  "indeed": {
+      "enabled": true,
+      "baseUrl": "https://ch.indeed.com",
+      "locations": [
+          "Zurich",
+          "Zug",
+          "Remote"
+      ],
+      "filters": {
+          "easyApplyOnly": true,
+          "fromage": 7,
+          "remotejob": true
+      }
   },
   "user_inputs": {
       "United States": {
